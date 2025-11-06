@@ -90,7 +90,7 @@ export const HeaderRu: React.FC = () => {
             {/* Login/Register Button - Desktop - Far Right */}
             <div className="hidden lg:flex ml-auto">
               <a
-                href="/catalog.html"
+                href="/auth.html"
                 className="flex items-center space-x-2 bg-[#144374] hover:bg-[#1e5ba8] text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg"
               >
                 {userName ? (
@@ -109,7 +109,7 @@ export const HeaderRu: React.FC = () => {
 
             {/* Login/Register Button - Mobile */}
             <a
-              href="/catalog.html"
+              href="/auth.html"
               className="lg:hidden flex items-center space-x-2 bg-[#144374] hover:bg-[#1e5ba8] text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm ml-auto"
             >
               {userName ? (

@@ -88,7 +88,7 @@ export const Header: React.FC = () => {
 
             {/* Login/Register Button - Desktop */}
             <a
-              href="/catalog.html"
+              href="/auth.html"
               className="hidden lg:flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg"
             >
               {userName ? (
@@ -106,7 +106,7 @@ export const Header: React.FC = () => {
 
             {/* Login/Register Button - Mobile */}
             <a
-              href="/catalog.html"
+              href="/auth.html"
               className="lg:hidden flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm"
             >
               {userName ? (
