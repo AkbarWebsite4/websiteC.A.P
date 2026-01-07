@@ -70,7 +70,7 @@ export const HeroRu: React.FC = () => {
         </h1>
 
         {/* Description */}
-        <p className="text-lg sm:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed font-medium -mt-2 content-reveal delay-4">
+        <p className="text-lg sm:text-xl text-black mb-8 max-w-3xl mx-auto leading-relaxed font-medium -mt-2 content-reveal delay-4">
           <span className="tracking-wide">Мы предлагаем профессиональный сервис, широкий выбор и быстрые поставки.</span>
         </p>
 

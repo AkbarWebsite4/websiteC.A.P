@@ -57,7 +57,7 @@ export const ProductsRu: React.FC = () => {
             <span className="text-[#144374]">АВТОЗАПЧАСТИ</span>
           </h2>
           <div className="w-24 h-1 bg-[#144374] mx-auto mb-8"></div>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto font-medium">
+          <p className="text-xl text-black max-w-3xl mx-auto font-medium">
             У нас вы можете приобрести как оригинальные запчасти, так и качественные аналоги мировых брендов — оптом и в розницу.
           </p>
         </div>
@@ -95,10 +95,10 @@ export const ProductsRu: React.FC = () => {
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-black mb-3 group-hover:text-[#144374] transition-colors duration-300">
+                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#144374] transition-colors duration-300">
                   {product.title}
                 </h3>
-                <p className="text-gray-400 leading-relaxed">
+                <p className="text-white leading-relaxed">
                   {product.description}
                 </p>
               </div>
@@ -129,10 +129,10 @@ export const ProductsRu: React.FC = () => {
 
                 {/* Content */}
                 <div className="md:w-1/2 p-6 flex flex-col justify-center">
-                  <h3 className="text-2xl font-bold text-black mb-4 group-hover:text-blue-400 transition-colors duration-300">
+                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300">
                     {product.title}
                   </h3>
-                  <p className="text-gray-400 leading-relaxed">
+                  <p className="text-white leading-relaxed">
                     {product.description}
                   </p>
                 </div>

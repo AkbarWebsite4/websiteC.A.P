@@ -39,8 +39,8 @@ export const WhyChooseRu: React.FC = () => {
             ПОЧЕМУ ВЫБИРАЮТ <span className="text-blue-500">C.A.P</span>
           </h2>
           <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto font-medium">
-            Когда важны производительность и надежность, профессионалы доверяют C.A.P. 
+          <p className="text-xl text-black max-w-3xl mx-auto font-medium">
+            Когда важны производительность и надежность, профессионалы доверяют C.A.P.
             за превосходное качество и непревзойденный сервис.
           </p>
         </div>
@@ -61,7 +61,7 @@ export const WhyChooseRu: React.FC = () => {
               <h3 className="text-xl font-bold text-black mb-4 group-hover:text-[#144374] transition-colors duration-300">
                 {reason.title}
               </h3>
-              <p className="text-gray-400 leading-relaxed">
+              <p className="text-black leading-relaxed">
                 {reason.description}
               </p>
             </div>
