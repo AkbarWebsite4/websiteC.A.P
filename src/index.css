@@ -350,26 +350,3 @@ textarea:focus {
     filter: brightness(0.9) contrast(1.1);
   }
 }
-
-/* Hero background responsive sizing */
-.hero-background {
-  background-size: contain;
-}
-
-@media (min-width: 640px) {
-  .hero-background {
-    background-size: 100% auto;
-  }
-}
-
-@media (min-width: 1024px) {
-  .hero-background {
-    background-size: 85% auto;
-  }
-}
-
-@media (min-width: 1280px) {
-  .hero-background {
-    background-size: 80% auto;
-  }
-}
