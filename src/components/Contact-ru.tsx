@@ -106,7 +106,7 @@ export const ContactRu: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-800 mt-16 pt-8 text-center">
+        <div className="relative z-10 border-t border-gray-800 mt-16 pt-8 text-center bg-white/90 backdrop-blur-sm rounded-lg px-6 py-6">
           <div className="flex items-center justify-center space-x-4 mb-4">
             <img
               src="/cap logotip.jpg"
@@ -118,7 +118,7 @@ export const ContactRu: React.FC = () => {
               <p className="text-sm text-black font-normal">Common Auto Parts</p>
             </div>
           </div>
-          <p className="text-black text-sm">
+          <p className="text-black text-sm font-medium">
             © 2026 Common Auto Parts. Все права защищены.
           </p>
         </div>
