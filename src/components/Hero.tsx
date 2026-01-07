@@ -26,19 +26,18 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(/logo_cap_with_ramka.png)',
+          backgroundImage: 'url(/background_cap.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           imageRendering: 'high-quality',
-          opacity: 0.15
+          opacity: 1
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-900/70 to-gray-900/90 z-[1]" />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Main Heading */}
