@@ -31,7 +31,22 @@ export const WhyChooseRu: React.FC = () => {
 
   return (
     <section id="about" className="py-20 relative bg-transparent">
-      
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url(/fourth_background_cap_with_avto_details.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          imageRendering: '-webkit-optimize-contrast',
+          WebkitImageRendering: '-webkit-optimize-contrast',
+          msInterpolationMode: 'nearest-neighbor'
+        }}
+      >
+        <div className="absolute inset-0 bg-white/80"></div>
+      </div>
+
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="relative z-10 text-center mb-16">
