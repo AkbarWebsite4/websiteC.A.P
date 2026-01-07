@@ -79,7 +79,7 @@ export const HeaderRu: React.FC = () => {
                 <a
                   key={link.name}
                   href={link.href}
-                  className="text-gray-300 hover:text-[#144374] font-semibold transition-colors duration-200 relative group tracking-wide nav-item-animated"
+                  className="text-black hover:text-[#144374] font-semibold transition-colors duration-200 relative group tracking-wide nav-item-animated"
                 >
                   {link.name}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#144374] transition-all duration-200 group-hover:w-full"></span>
