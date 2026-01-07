@@ -28,10 +28,9 @@ export const Hero: React.FC = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 hero-background"
         style={{
           backgroundImage: 'url(/background_cap_with_avto_details.png)',
-          backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           imageRendering: 'high-quality',
