@@ -25,7 +25,7 @@ export const HeroRu: React.FC = () => {
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(/background_cap_with_avto_details_3.png)',
+          backgroundImage: 'url(/background_cap_with_avto_details_4.png)',
           backgroundSize: '100%',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
