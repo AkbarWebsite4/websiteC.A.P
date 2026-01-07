@@ -52,7 +52,7 @@ export const ProductsRu: React.FC = () => {
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(/second_background_cap_with_avto_details.png)',
+          backgroundImage: 'url(/second_background_cap_with_avto_details_1.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
