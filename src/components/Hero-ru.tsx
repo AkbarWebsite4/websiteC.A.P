@@ -32,7 +32,9 @@ export const HeroRu: React.FC = () => {
           imageRendering: 'high-quality',
           opacity: 1
         }}
-      />
+      >
+        <div className="absolute inset-0 bg-white/80"></div>
+      </div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Centered Logo */}
