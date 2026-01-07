@@ -30,7 +30,7 @@ export const Hero: React.FC = () => {
       <div
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(/background_cap_with_ramka_2.png)',
+          backgroundImage: 'url(/background_cap_with_avto_details.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
