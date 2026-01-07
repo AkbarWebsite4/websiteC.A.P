@@ -83,7 +83,7 @@ export const BrandsRu: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="relative z-10 text-center mb-16">
-          <h2 className="text-4xl lg:text-6xl font-black text-white mb-6 tracking-tight">
+          <h2 className="text-4xl lg:text-6xl font-black text-black mb-6 tracking-tight">
             НАШИ <span className="text-[#144374]">БРЕНДЫ</span>
           </h2>
           <div className="w-24 h-1 bg-[#144374] mx-auto mb-8"></div>
@@ -115,7 +115,7 @@ export const BrandsRu: React.FC = () => {
                       }}
                     />
                   ) : (
-                    <div className="text-white font-bold text-sm text-center leading-tight break-words p-1">
+                    <div className="text-black font-bold text-sm text-center leading-tight break-words p-1">
                       {brand.name}
                     </div>
                   )}
@@ -123,7 +123,7 @@ export const BrandsRu: React.FC = () => {
                   {/* Gradient Shadow - всегда показывается */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent rounded-b-xl py-2">
                     {brand.name && (
-                      <div className="text-white text-xs font-bold text-center px-1">
+                      <div className="text-black text-xs font-bold text-center px-1">
                         {brand.name}
                       </div>
                     )}

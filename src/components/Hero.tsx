@@ -41,7 +41,7 @@ export const Hero: React.FC = () => {
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Main Heading */}
-        <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-white mb-8 leading-tight tracking-tight mt-16">
+        <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-black mb-8 leading-tight tracking-tight mt-16">
           <span className="block text-blue-500 text-3xl sm:text-4xl lg:text-5xl font-black mb-4 tracking-widest">
             C.A.P
           </span>
@@ -70,11 +70,11 @@ export const Hero: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="w-full pl-6 pr-16 py-4 bg-gray-800/90 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-base font-medium"
+                className="w-full pl-6 pr-16 py-4 bg-gray-800/90 border border-gray-600 rounded-xl text-black placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-base font-medium"
               />
               <button
                 onClick={handleSearch}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-colors shadow-lg"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-black p-3 rounded-lg transition-colors shadow-lg"
               >
                 <Search className="w-5 h-5" />
               </button>

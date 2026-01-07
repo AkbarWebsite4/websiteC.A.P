@@ -48,7 +48,7 @@ export const Products: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="relative z-10 text-center mb-16">
-          <h2 className="text-4xl lg:text-6xl font-black text-white mb-6 tracking-tight">
+          <h2 className="text-4xl lg:text-6xl font-black text-black mb-6 tracking-tight">
             ПРЕМИАЛЬНЫЕ <span className="text-blue-500">АВТОЗАПЧАСТИ</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
@@ -87,7 +87,7 @@ export const Products: React.FC = () => {
               
               {/* Product Content */}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                <h3 className="text-xl font-bold text-black mb-3 group-hover:text-blue-400 transition-colors">
                   {product.title}
                 </h3>
                 <p className="text-gray-300 text-sm leading-relaxed">
@@ -114,13 +114,13 @@ export const Products: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div className="absolute top-4 right-4 bg-blue-500 p-3 rounded-full">
-                  {index === 0 ? <Award className="w-6 h-6 text-white" /> : <Store className="w-6 h-6 text-white" />}
+                  {index === 0 ? <Award className="w-6 h-6 text-black" /> : <Store className="w-6 h-6 text-black" />}
                 </div>
               </div>
               
               {/* Product Content */}
               <div className="p-8">
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors">
+                <h3 className="text-2xl font-bold text-black mb-4 group-hover:text-blue-400 transition-colors">
                   {product.title}
                 </h3>
                 <p className="text-gray-300 leading-relaxed">

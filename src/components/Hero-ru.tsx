@@ -50,7 +50,7 @@ export const HeroRu: React.FC = () => {
         </div>
 
         {/* Main Heading - C.A.P text */}
-        <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-white mb-8 leading-tight tracking-tight hero-title-animated">
+        <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-black mb-8 leading-tight tracking-tight hero-title-animated">
           <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-6 tracking-tight content-reveal delay-2">
             <img
               src="/Parts 1.png"
@@ -62,7 +62,7 @@ export const HeroRu: React.FC = () => {
                 msImageRendering: 'crisp-edges'
               }}
             />
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white mt-4 tracking-wide content-reveal delay-3">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-black mt-4 tracking-wide content-reveal delay-3">
               Ваш проводник в сфере автозапчастей
             </h2>
           </div>
@@ -84,11 +84,11 @@ export const HeroRu: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="w-full pl-6 pr-16 py-4 bg-gray-800/90 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20 transition-all text-base font-medium"
+                className="w-full pl-6 pr-16 py-4 bg-gray-800/90 border border-gray-600 rounded-xl text-black placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20 transition-all text-base font-medium"
               />
               <button
                 onClick={handleSearch}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#144374] hover:bg-[#1e5ba8] text-white p-3 rounded-lg transition-colors shadow-lg"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#144374] hover:bg-[#1e5ba8] text-black p-3 rounded-lg transition-colors shadow-lg"
               >
                 <Search className="w-5 h-5" />
               </button>

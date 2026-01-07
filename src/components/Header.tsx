@@ -66,7 +66,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center justify-between h-20">
             {/* Mobile Menu Button - Left Corner */}
             <button
-              className="lg:hidden p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-800 transition-colors duration-200"
+              className="lg:hidden p-2 rounded-md text-gray-300 hover:text-black hover:bg-gray-800 transition-colors duration-200"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -89,7 +89,7 @@ export const Header: React.FC = () => {
             {/* Login/Register Button - Desktop */}
             <a
               href="/auth.html"
-              className="hidden lg:flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg"
+              className="hidden lg:flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-black px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg"
             >
               {userName ? (
                 <>
@@ -107,7 +107,7 @@ export const Header: React.FC = () => {
             {/* Login/Register Button - Mobile */}
             <a
               href="/auth.html"
-              className="lg:hidden flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm"
+              className="lg:hidden flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-black px-4 py-2 rounded-lg font-semibold transition-colors text-sm"
             >
               {userName ? (
                 <>
@@ -140,10 +140,10 @@ export const Header: React.FC = () => {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-700">
-            <h2 className="text-xl font-bold text-white">Menu</h2>
+            <h2 className="text-xl font-bold text-black">Menu</h2>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="text-gray-400 hover:text-white transition-colors"
+              className="text-gray-400 hover:text-black transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
@@ -156,7 +156,7 @@ export const Header: React.FC = () => {
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-blue-600/20 hover:text-white transition-all duration-200"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-blue-600/20 hover:text-black transition-all duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <link.icon className="w-5 h-5" />

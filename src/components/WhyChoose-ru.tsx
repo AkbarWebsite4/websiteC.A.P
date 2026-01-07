@@ -35,7 +35,7 @@ export const WhyChooseRu: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="relative z-10 text-center mb-16">
-          <h2 className="text-4xl lg:text-6xl font-black text-white mb-6 tracking-tight">
+          <h2 className="text-4xl lg:text-6xl font-black text-black mb-6 tracking-tight">
             ПОЧЕМУ ВЫБИРАЮТ <span className="text-blue-500">C.A.P</span>
           </h2>
           <div className="w-24 h-1 bg-blue-500 mx-auto mb-8"></div>
@@ -53,12 +53,12 @@ export const WhyChooseRu: React.FC = () => {
               className="text-center group"
             >
               {/* Icon */}
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-full mb-6 group-hover:from-blue-700 group-hover:to-blue-800 transition-all duration-300 transform group-hover:scale-110 shadow-xl">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 text-black rounded-full mb-6 group-hover:from-blue-700 group-hover:to-blue-800 transition-all duration-300 transform group-hover:scale-110 shadow-xl">
                 <reason.icon className="h-10 w-10" />
               </div>
               
               {/* Content */}
-              <h3 className="text-xl font-bold text-white mb-4 group-hover:text-[#144374] transition-colors duration-300">
+              <h3 className="text-xl font-bold text-black mb-4 group-hover:text-[#144374] transition-colors duration-300">
                 {reason.title}
               </h3>
               <p className="text-gray-400 leading-relaxed">

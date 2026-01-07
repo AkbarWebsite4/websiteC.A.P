@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer id="contact" className="bg-blue-900 text-white">
+    <footer id="contact" className="bg-blue-900 text-black">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -24,13 +24,13 @@ export const Footer: React.FC = () => {
               <h3 className="text-2xl font-normal">Common Auto Parts</h3>
             </div>
             <div className="flex justify-center space-x-4">
-              <a href="#" className="text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#" className="text-blue-200 hover:text-black transition-colors duration-200">
                 <Facebook className="h-6 w-6" />
               </a>
-              <a href="#" className="text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#" className="text-blue-200 hover:text-black transition-colors duration-200">
                 <Linkedin className="h-6 w-6" />
               </a>
-              <a href="#" className="text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#" className="text-blue-200 hover:text-black transition-colors duration-200">
                 <Instagram className="h-6 w-6" />
               </a>
             </div>
@@ -63,7 +63,7 @@ export const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
             <div className="space-y-3">
-              <a href="#home" className="block text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#home" className="block text-blue-200 hover:text-black transition-colors duration-200">
                 Home
               </a>
               <a href="#products" className="block text-blue-200 hover:text-white transition-colors duration-200">
@@ -89,13 +89,13 @@ export const Footer: React.FC = () => {
               © {currentYear} Common Auto Parts. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#" className="text-blue-200 hover:text-black transition-colors duration-200">
                 Privacy Policy
               </a>
-              <a href="#" className="text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#" className="text-blue-200 hover:text-black transition-colors duration-200">
                 Terms of Service
               </a>
-              <a href="#" className="text-blue-200 hover:text-white transition-colors duration-200">
+              <a href="#" className="text-blue-200 hover:text-black transition-colors duration-200">
                 Warranty
               </a>
             </div>

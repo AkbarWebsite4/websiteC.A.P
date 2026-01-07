@@ -52,7 +52,7 @@ export const ProductsRu: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="relative z-10 text-center mb-16">
-          <h2 className="text-2xl sm:text-4xl lg:text-6xl font-black text-white mb-6 tracking-tight">
+          <h2 className="text-2xl sm:text-4xl lg:text-6xl font-black text-black mb-6 tracking-tight">
             <span className="block sm:inline">ВЫСОКОКАЧЕСТВЕННЫЕ</span>{' '}
             <span className="text-[#144374]">АВТОЗАПЧАСТИ</span>
           </h2>
@@ -95,7 +95,7 @@ export const ProductsRu: React.FC = () => {
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#144374] transition-colors duration-300">
+                <h3 className="text-xl font-bold text-black mb-3 group-hover:text-[#144374] transition-colors duration-300">
                   {product.title}
                 </h3>
                 <p className="text-gray-400 leading-relaxed">
@@ -129,7 +129,7 @@ export const ProductsRu: React.FC = () => {
 
                 {/* Content */}
                 <div className="md:w-1/2 p-6 flex flex-col justify-center">
-                  <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-blue-400 transition-colors duration-300">
+                  <h3 className="text-2xl font-bold text-black mb-4 group-hover:text-blue-400 transition-colors duration-300">
                     {product.title}
                   </h3>
                   <p className="text-gray-400 leading-relaxed">
