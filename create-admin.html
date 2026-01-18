@@ -71,7 +71,13 @@
     const SUPABASE_URL = 'https://puboeklvsmzsegxnqasc.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB1Ym9la2x2c216c2VneG5xYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI1Mjk1OTEsImV4cCI6MjA3ODEwNTU5MX0.PbTo9SFLYYyer4L71pCgUJlEB3WbKbJRK-JDO-QyS8M';
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false
+      }
+    });
 
     async function hashPassword(password) {
       const encoder = new TextEncoder();
