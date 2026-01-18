@@ -172,7 +172,7 @@ const AuthPage = () => {
 
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-md w-full">
           <div className="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-700">
             <h2 className="text-2xl font-bold text-white mb-6">Забыли пароль?</h2>
@@ -229,8 +229,8 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-md w-full my-8">
         <div className="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-700">
           <div className="flex border-b border-gray-700 mb-6">
             <button
