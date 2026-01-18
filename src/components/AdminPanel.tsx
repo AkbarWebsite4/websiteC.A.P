@@ -80,7 +80,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
     try {
       let allData: any[] = [];
       let from = 0;
-      const batchSize = 1000;
+      const batchSize = 5000;
       let hasMore = true;
 
       while (hasMore) {
