@@ -537,7 +537,18 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
     <div className="min-h-screen font-sans relative">
       {/* Background */}
       <div className="absolute inset-0 z-0">
-        <div className="w-full h-full bg-black"></div>
+        <div
+          className="w-full h-full"
+          style={{
+            backgroundImage: 'url(/background_cap_with_avto_details_4.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            imageRendering: 'high-quality'
+          }}
+        >
+          <div className="absolute inset-0 bg-white/80"></div>
+        </div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-8">
