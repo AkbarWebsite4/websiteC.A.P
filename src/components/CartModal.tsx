@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Trash2, ShoppingCart, FileUp, Download } from 'lucide-react';
-import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';
 
 interface CartItem {
   id: string;
@@ -89,74 +89,87 @@ export const CartModal: React.FC<CartModalProps> = ({
       return;
     }
 
-    const exportData = items.map((item, index) => ({
-      '№': index + 1,
-      'Артикул': item.part_code,
-      'Описание': item.part_name,
-      'Количество': item.quantity,
-      [`Цена (${selectedCurrency})`]: formatPrice(item.price),
-      [`Сумма (${selectedCurrency})`]: (parseFloat(formatPrice(item.price)) * item.quantity).toFixed(2)
-    }));
+    const headerStyle = {
+      font: { name: 'Arial', sz: 11, bold: true, color: { rgb: '000000' } },
+      fill: { fgColor: { rgb: 'D3D3D3' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: {
+        top: { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left: { style: 'thin', color: { rgb: '000000' } },
+        right: { style: 'thin', color: { rgb: '000000' } }
+      }
+    };
 
-    exportData.push({
-      '№': '',
-      'Артикул': '',
-      'Описание': '',
-      'Количество': '',
-      [`Цена (${selectedCurrency})`]: 'Общая сумма:',
-      [`Сумма (${selectedCurrency})`]: calculateTotal().toFixed(2)
-    });
+    const cellStyle = {
+      font: { name: 'Arial', sz: 11, color: { rgb: '000000' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: {
+        top: { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left: { style: 'thin', color: { rgb: '000000' } },
+        right: { style: 'thin', color: { rgb: '000000' } }
+      }
+    };
 
-    const ws = XLSX.utils.json_to_sheet(exportData);
+    const totalStyle = {
+      font: { name: 'Arial', sz: 11, bold: true, color: { rgb: '000000' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: {
+        top: { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left: { style: 'thin', color: { rgb: '000000' } },
+        right: { style: 'thin', color: { rgb: '000000' } }
+      }
+    };
 
-    const colWidths = [
-      { wch: 5 },
-      { wch: 20 },
-      { wch: 40 },
-      { wch: 12 },
+    const headers = ['№', 'Артикул', 'Описание', 'Количество', `Цена (${selectedCurrency})`, `Сумма (${selectedCurrency})`];
+
+    const data = items.map((item, index) => [
+      index + 1,
+      item.part_code,
+      item.part_name,
+      item.quantity,
+      parseFloat(formatPrice(item.price)),
+      parseFloat((parseFloat(formatPrice(item.price)) * item.quantity).toFixed(2))
+    ]);
+
+    data.push([
+      '',
+      '',
+      '',
+      '',
+      'Общая сумма:',
+      parseFloat(calculateTotal().toFixed(2))
+    ]);
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+
+    ws['!cols'] = [
+      { wch: 8 },
+      { wch: 25 },
+      { wch: 50 },
       { wch: 15 },
-      { wch: 15 }
+      { wch: 18 },
+      { wch: 18 }
     ];
-    ws['!cols'] = colWidths;
 
     const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
 
     for (let R = range.s.r; R <= range.e.r; R++) {
       for (let C = range.s.c; C <= range.e.c; C++) {
         const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-        if (!ws[cellAddress]) continue;
 
-        if (!ws[cellAddress].s) {
-          ws[cellAddress].s = {};
+        if (!ws[cellAddress]) {
+          ws[cellAddress] = { t: 's', v: '' };
         }
 
-        ws[cellAddress].s = {
-          alignment: {
-            horizontal: 'center',
-            vertical: 'center',
-            wrapText: true
-          },
-          border: {
-            top: { style: 'thin', color: { rgb: '000000' } },
-            bottom: { style: 'thin', color: { rgb: '000000' } },
-            left: { style: 'thin', color: { rgb: '000000' } },
-            right: { style: 'thin', color: { rgb: '000000' } }
-          },
-          font: {
-            name: 'Arial',
-            sz: 11
-          }
-        };
-
         if (R === 0) {
-          ws[cellAddress].s.font = {
-            name: 'Arial',
-            sz: 11,
-            bold: true
-          };
-          ws[cellAddress].s.fill = {
-            fgColor: { rgb: 'E0E0E0' }
-          };
+          ws[cellAddress].s = headerStyle;
+        } else if (R === data.length) {
+          ws[cellAddress].s = totalStyle;
+        } else {
+          ws[cellAddress].s = cellStyle;
         }
       }
     }
@@ -165,7 +178,7 @@ export const CartModal: React.FC<CartModalProps> = ({
     XLSX.utils.book_append_sheet(wb, ws, 'Заказ');
 
     const fileName = userFileName.endsWith('.xlsx') ? userFileName : `${userFileName}.xlsx`;
-    XLSX.writeFile(wb, fileName, { cellStyles: true });
+    XLSX.writeFile(wb, fileName);
   };
 
   return (
