@@ -275,8 +275,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
   const saveCatalog = async () => {
     if (previewData.length > 0) {
       setIsProcessing(true);
+      let successfulInserts = 0;
+      let failedBatches = 0;
+
       try {
-        // Удалить все существующие записи
         const { error: deleteError } = await supabase
           .from('catalog_parts')
           .delete()
@@ -284,7 +286,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
 
         if (deleteError) throw deleteError;
 
-        // Вставить новые данные батчами по 1000 записей
         const catalogToInsert = previewData.map(item => ({
           code: item.code,
           name: item.name,
@@ -293,33 +294,66 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
           weight: item.weight,
           category: item.category,
           description: item.description,
-          availability: item.availability
+          availability: item.availability,
+          qty: item.availability === 'В наличии' ? '999' : '0'
         }));
 
-        const batchSize = 1000;
+        const batchSize = 5000;
+        const totalBatches = Math.ceil(catalogToInsert.length / batchSize);
+
         for (let i = 0; i < catalogToInsert.length; i += batchSize) {
           const batch = catalogToInsert.slice(i, i + batchSize);
-          const { error: insertError } = await supabase
-            .from('catalog_parts')
-            .insert(batch);
+          const currentBatch = Math.floor(i / batchSize) + 1;
 
-          if (insertError) throw insertError;
-          console.log(`Загружено ${Math.min(i + batchSize, catalogToInsert.length)} из ${catalogToInsert.length} позиций`);
+          try {
+            const { error: insertError } = await supabase
+              .from('catalog_parts')
+              .insert(batch);
+
+            if (insertError) {
+              console.error(`Ошибка в батче ${currentBatch}:`, insertError);
+              failedBatches++;
+            } else {
+              successfulInserts += batch.length;
+              console.log(`Батч ${currentBatch}/${totalBatches}: Загружено ${Math.min(i + batchSize, catalogToInsert.length)} из ${catalogToInsert.length} позиций`);
+            }
+          } catch (batchError) {
+            console.error(`Критическая ошибка в батче ${currentBatch}:`, batchError);
+            failedBatches++;
+          }
         }
 
         onCatalogUpdate(previewData, selectedFiles.map(file => file.name));
-        alert(`Каталог сохранен в базу данных! Загружено ${previewData.length} позиций.`);
+
+        const statusMessage = failedBatches > 0
+          ? `Загружено ${successfulInserts} из ${catalogToInsert.length} позиций. Ошибок: ${failedBatches} батч(ей).`
+          : `✓ Успешно загружено ${successfulInserts} позиций!`;
+
+        const statusType = failedBatches > 0 ? 'warning' : 'success';
+
+        showUploadStatus(statusMessage, statusType);
+
         setSelectedFiles([]);
         setPreviewData([]);
         setAllCatalogData(previewData);
-        onClose();
+
+        if (failedBatches === 0) {
+          setTimeout(() => onClose(), 3000);
+        }
       } catch (error: any) {
         console.error('Ошибка сохранения каталога:', error);
-        alert(`Ошибка сохранения: ${error.message}`);
+        showUploadStatus(`Ошибка: ${error.message}`, 'error');
       } finally {
         setIsProcessing(false);
       }
     }
+  };
+
+  const [uploadStatus, setUploadStatus] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+
+  const showUploadStatus = (message: string, type: 'success' | 'error' | 'warning') => {
+    setUploadStatus({ message, type });
+    setTimeout(() => setUploadStatus(null), 5000);
   };
 
   const clearCatalog = async () => {
@@ -360,6 +394,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
             <EyeOff className="w-6 h-6" />
           </button>
         </div>
+
+        {/* Upload Status Message */}
+        {uploadStatus && (
+          <div className={`mb-6 p-6 rounded-xl border-2 ${
+            uploadStatus.type === 'success'
+              ? 'bg-green-900/30 border-green-500 text-green-200'
+              : uploadStatus.type === 'error'
+              ? 'bg-red-900/30 border-red-500 text-red-200'
+              : 'bg-yellow-900/30 border-yellow-500 text-yellow-200'
+          } animate-pulse`}>
+            <div className="flex items-center space-x-3">
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                uploadStatus.type === 'success'
+                  ? 'bg-green-500'
+                  : uploadStatus.type === 'error'
+                  ? 'bg-red-500'
+                  : 'bg-yellow-500'
+              }`}>
+                {uploadStatus.type === 'success' ? '✓' : uploadStatus.type === 'error' ? '✕' : '⚠'}
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-lg">{uploadStatus.message}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <>
             <div className="mb-6">

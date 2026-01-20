@@ -77,6 +77,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
   const [partQuantities, setPartQuantities] = useState<{ [key: string]: number }>({});
   const [selectedCurrency, setSelectedCurrency] = useState<'AED' | 'TJS' | 'USD'>('AED');
   const [exchangeRates, setExchangeRates] = useState<{ [key: string]: number }>({ AED: 1, TJS: 2.89, USD: 0.2723 });
+  const [quantityWarnings, setQuantityWarnings] = useState<{ [key: string]: string }>({});
+  const [uploadStatusMessage, setUploadStatusMessage] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const UPLOAD_PASSWORD = 'cap2025';
@@ -108,6 +110,29 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
   };
 
   useEffect(() => {
+    const updateExchangeRatesFromAPI = async () => {
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+        const response = await fetch(
+          `${supabaseUrl}/functions/v1/update-exchange-rates`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.ok) {
+          console.log('Exchange rates updated successfully');
+        }
+      } catch (error) {
+        console.error('Error updating exchange rates from API:', error);
+      }
+    };
+
     const fetchExchangeRates = async () => {
       try {
         const { data, error } = await supabase
@@ -131,9 +156,13 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
       }
     };
 
+    updateExchangeRatesFromAPI();
     fetchExchangeRates();
 
-    const interval = setInterval(fetchExchangeRates, 3600000);
+    const interval = setInterval(() => {
+      updateExchangeRatesFromAPI();
+      fetchExchangeRates();
+    }, 3600000);
 
     return () => clearInterval(interval);
   }, []);
@@ -315,18 +344,29 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
     }
   };
 
+  const showQuantityWarning = (partCode: string, message: string) => {
+    setQuantityWarnings(prev => ({ ...prev, [partCode]: message }));
+    setTimeout(() => {
+      setQuantityWarnings(prev => {
+        const updated = { ...prev };
+        delete updated[partCode];
+        return updated;
+      });
+    }, 3000);
+  };
+
   const addToCart = async (part: PartData) => {
     try {
       const quantityToAdd = partQuantities[part.code] || 0;
 
       if (quantityToAdd <= 0) {
-        alert('Укажите количество больше 0');
+        showQuantityWarning(part.code, 'Укажите количество больше 0');
         return;
       }
 
       const maxQty = parseInt(part.qty || '999999');
       if (quantityToAdd > maxQty) {
-        alert(`Максимальное количество: ${maxQty}`);
+        showQuantityWarning(part.code, `Максимальное количество: ${maxQty}`);
         return;
       }
 
@@ -335,7 +375,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
       if (existingItem) {
         const newQuantity = existingItem.quantity + quantityToAdd;
         if (newQuantity > maxQty) {
-          alert(`Максимальное количество: ${maxQty}. В корзине уже ${existingItem.quantity} шт.`);
+          showQuantityWarning(part.code, `Максимальное количество: ${maxQty}. В корзине уже ${existingItem.quantity} шт.`);
           return;
         }
 
@@ -370,11 +410,11 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
         }
       }
 
-      setPartQuantities(prev => ({ ...prev, [part.code]: 0 }));
-      alert(`Добавлено ${quantityToAdd} шт. в корзину`);
+      setPartQuantities(prev => ({ ...prev, [part.code]: 1 }));
+      showQuantityWarning(part.code, `✓ Добавлено ${quantityToAdd} шт. в корзину`);
     } catch (error) {
       console.error('Ошибка добавления в корзину:', error);
-      alert(`Ошибка добавления в корзину: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+      showQuantityWarning(part.code, `Ошибка: ${error instanceof Error ? error.message : 'Не удалось добавить в корзину'}`);
     }
   };
 
@@ -882,7 +922,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                         const value = parseInt(e.target.value) || 0;
                         const maxQty = parseInt(part.qty || '999999');
                         if (value > maxQty) {
-                          alert(`Максимальное количество: ${maxQty}`);
+                          showQuantityWarning(part.code, `Максимальное количество: ${maxQty}`);
                           setPartQuantities(prev => ({ ...prev, [part.code]: maxQty }));
                         } else {
                           setPartQuantities(prev => ({ ...prev, [part.code]: value >= 0 ? value : 0 }));
@@ -890,6 +930,19 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                       }}
                       className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
                     />
+
+                    {/* Warning Message */}
+                    {quantityWarnings[part.code] && (
+                      <div className={`mt-2 px-3 py-2 rounded-lg text-sm font-medium animate-pulse ${
+                        quantityWarnings[part.code].includes('✓')
+                          ? 'bg-green-100 text-green-800 border border-green-300'
+                          : quantityWarnings[part.code].includes('Ошибка')
+                          ? 'bg-red-100 text-red-800 border border-red-300'
+                          : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                      }`}>
+                        {quantityWarnings[part.code]}
+                      </div>
+                    )}
                   </div>
 
                   {/* Add to Cart Button */}
@@ -956,14 +1009,14 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2 text-center">Удобная оплата</h3>
                 <p className="text-gray-800 text-center mb-6">
-                  Удобная оплата через DC Money и Alif для вашего комфорта
+                  Удобная оплата через DC и Alif для вашего комфорта
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                   <div className="bg-white p-4 rounded-xl shadow-lg">
-                    <h4 className="text-lg font-bold text-gray-900 mb-3 text-center">DC Money</h4>
+                    <h4 className="text-lg font-bold text-gray-900 mb-3 text-center">DC</h4>
                     <img
                       src="/QR Dc .jpg"
-                      alt="QR код для оплаты DC Money"
+                      alt="QR код для оплаты DC"
                       className="w-full h-auto"
                       style={{ maxHeight: '300px', objectFit: 'contain' }}
                     />

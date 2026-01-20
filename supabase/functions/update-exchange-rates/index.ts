@@ -23,7 +23,7 @@ Deno.serve(async (req: Request) => {
     const targetCurrencies = ['TJS', 'USD'];
 
     const response = await fetch(
-      `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/aed.json`,
+      `https://open.er-api.com/v6/latest/AED`,
       {
         method: 'GET',
         headers: {
@@ -37,15 +37,14 @@ Deno.serve(async (req: Request) => {
     }
 
     const data = await response.json();
-    const rates = data.aed;
+    const rates = data.rates;
 
-    console.log('Fetched rates:', rates);
+    console.log('Fetched rates from ExchangeRate-API:', rates);
 
     const updates = [];
     for (const currency of targetCurrencies) {
-      const currencyLower = currency.toLowerCase();
-      const rate = rates[currencyLower];
-      
+      const rate = rates[currency];
+
       if (rate) {
         const { error } = await supabase
           .from('exchange_rates')
