@@ -36,14 +36,16 @@ export const CartModal: React.FC<CartModalProps> = ({
   if (!isOpen) return null;
 
   const calculateTotal = (): number => {
-    return items.reduce((total, item) => {
+    const total = items.reduce((sum, item) => {
       const price = parseFloat(item.price);
-      if (!isNaN(price)) {
+      if (!isNaN(price) && price > 0) {
         const rate = exchangeRates[selectedCurrency] || 1;
-        return total + (price * rate * item.quantity);
+        const itemTotal = price * rate * item.quantity;
+        return sum + itemTotal;
       }
-      return total;
+      return sum;
     }, 0);
+    return total;
   };
 
   const formatPrice = (price: string): string => {
@@ -56,13 +58,16 @@ export const CartModal: React.FC<CartModalProps> = ({
   const handleWhatsAppPayment = () => {
     let message = 'Здравствуйте! Хочу оформить заказ:\n\n';
     items.forEach((item, index) => {
+      const itemPrice = formatPrice(item.price);
+      const itemTotal = (parseFloat(formatPrice(item.price)) * item.quantity).toFixed(2);
       message += `${index + 1}. ${item.part_name}\n`;
       message += `   Код: ${item.part_code}\n`;
       message += `   Бренд: ${item.brand}\n`;
-      message += `   Цена: ${item.price}\n`;
-      message += `   Количество: ${item.quantity}\n\n`;
+      message += `   Цена: ${itemPrice} ${selectedCurrency}\n`;
+      message += `   Количество: ${item.quantity}\n`;
+      message += `   Сумма: ${itemTotal} ${selectedCurrency}\n\n`;
     });
-    message += `Общая сумма: ${calculateTotal().toFixed(2)} AED\n\n`;
+    message += `Общая сумма: ${calculateTotal().toFixed(2)} ${selectedCurrency}\n\n`;
     message += 'Оплатить через Dc - Alif';
 
     const encodedMessage = encodeURIComponent(message);
@@ -114,11 +119,53 @@ export const CartModal: React.FC<CartModalProps> = ({
     ];
     ws['!cols'] = colWidths;
 
+    const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+        if (!ws[cellAddress]) continue;
+
+        if (!ws[cellAddress].s) {
+          ws[cellAddress].s = {};
+        }
+
+        ws[cellAddress].s = {
+          alignment: {
+            horizontal: 'center',
+            vertical: 'center',
+            wrapText: true
+          },
+          border: {
+            top: { style: 'thin', color: { rgb: '000000' } },
+            bottom: { style: 'thin', color: { rgb: '000000' } },
+            left: { style: 'thin', color: { rgb: '000000' } },
+            right: { style: 'thin', color: { rgb: '000000' } }
+          },
+          font: {
+            name: 'Arial',
+            sz: 11
+          }
+        };
+
+        if (R === 0) {
+          ws[cellAddress].s.font = {
+            name: 'Arial',
+            sz: 11,
+            bold: true
+          };
+          ws[cellAddress].s.fill = {
+            fgColor: { rgb: 'E0E0E0' }
+          };
+        }
+      }
+    }
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Заказ');
 
     const fileName = userFileName.endsWith('.xlsx') ? userFileName : `${userFileName}.xlsx`;
-    XLSX.writeFile(wb, fileName);
+    XLSX.writeFile(wb, fileName, { cellStyles: true });
   };
 
   return (
@@ -165,30 +212,33 @@ export const CartModal: React.FC<CartModalProps> = ({
                         <span className="text-gray-400 text-sm">{item.brand}</span>
                       </div>
                       <h3 className="text-white font-medium mb-2">{item.part_name}</h3>
-                      <div className="flex items-center space-x-4">
+                      <div className="flex items-center justify-between mb-2">
                         <span className="text-green-400 font-semibold">
                           {formatPrice(item.price)} {selectedCurrency}
                         </span>
-                        <div className="flex items-center space-x-2">
-                          <label className="text-gray-500 text-sm">Количество:</label>
-                          <input
-                            type="number"
-                            min="1"
-                            max={parseInt(item.max_qty || '999999')}
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const value = parseInt(e.target.value) || 1;
-                              const maxQty = parseInt(item.max_qty || '999999');
-                              if (value > maxQty) {
-                                alert(`Максимальное количество: ${maxQty}`);
-                                onUpdateQuantity(item.id, maxQty);
-                              } else {
-                                onUpdateQuantity(item.id, value >= 1 ? value : 1);
-                              }
-                            }}
-                            className="w-20 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
-                          />
-                        </div>
+                        <span className="text-blue-400 font-semibold">
+                          Сумма: {(parseFloat(formatPrice(item.price)) * item.quantity).toFixed(2)} {selectedCurrency}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <label className="text-gray-500 text-sm">Количество:</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max={parseInt(item.max_qty || '999999')}
+                          value={item.quantity}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 1;
+                            const maxQty = parseInt(item.max_qty || '999999');
+                            if (value > maxQty) {
+                              alert(`Максимальное количество: ${maxQty}`);
+                              onUpdateQuantity(item.id, maxQty);
+                            } else {
+                              onUpdateQuantity(item.id, value >= 1 ? value : 1);
+                            }
+                          }}
+                          className="w-20 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
+                        />
                       </div>
                       {item.max_qty && parseInt(item.max_qty) < 999999 && (
                         <p className="text-xs text-gray-400 mt-1">

@@ -390,14 +390,18 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
         const { error } = await supabase
           .from('cart_items')
-          .update({ quantity: newQuantity, updated_at: new Date().toISOString() })
+          .update({
+            quantity: newQuantity,
+            max_qty: part.qty || '999999',
+            updated_at: new Date().toISOString()
+          })
           .eq('id', existingItem.id);
 
         if (error) throw error;
 
         setCartItems(prev => prev.map(item =>
           item.id === existingItem.id
-            ? { ...item, quantity: newQuantity }
+            ? { ...item, quantity: newQuantity, max_qty: part.qty || '999999' }
             : item
         ));
       } else {
@@ -446,15 +450,21 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
   const updateCartQuantity = async (itemId: string, quantity: number) => {
     try {
+      const item = cartItems.find(i => i.id === itemId);
+      if (!item) return;
+
+      const maxQty = parseInt(item.max_qty || '999999');
+      const validQuantity = Math.min(Math.max(1, quantity), maxQty);
+
       const { error } = await supabase
         .from('cart_items')
-        .update({ quantity, updated_at: new Date().toISOString() })
+        .update({ quantity: validQuantity, updated_at: new Date().toISOString() })
         .eq('id', itemId);
 
       if (error) throw error;
 
       setCartItems(prev => prev.map(item =>
-        item.id === itemId ? { ...item, quantity } : item
+        item.id === itemId ? { ...item, quantity: validQuantity } : item
       ));
     } catch (error) {
       console.error('Ошибка обновления количества:', error);
