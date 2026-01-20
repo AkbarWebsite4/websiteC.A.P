@@ -9,6 +9,7 @@ interface CartItem {
   brand: string;
   price: string;
   quantity: number;
+  max_qty?: string;
 }
 
 interface CartModalProps {
@@ -18,6 +19,8 @@ interface CartModalProps {
   onRemoveItem: (id: string) => void;
   onClearCart: () => void;
   onUpdateQuantity: (id: string, quantity: number) => void;
+  selectedCurrency?: 'AED' | 'TJS' | 'USD';
+  exchangeRates?: { [key: string]: number };
 }
 
 export const CartModal: React.FC<CartModalProps> = ({
@@ -26,7 +29,9 @@ export const CartModal: React.FC<CartModalProps> = ({
   items,
   onRemoveItem,
   onClearCart,
-  onUpdateQuantity
+  onUpdateQuantity,
+  selectedCurrency = 'AED',
+  exchangeRates = { AED: 1, TJS: 2.89, USD: 0.2723 }
 }) => {
   if (!isOpen) return null;
 
@@ -34,10 +39,18 @@ export const CartModal: React.FC<CartModalProps> = ({
     return items.reduce((total, item) => {
       const price = parseFloat(item.price);
       if (!isNaN(price)) {
-        return total + (price * item.quantity);
+        const rate = exchangeRates[selectedCurrency] || 1;
+        return total + (price * rate * item.quantity);
       }
       return total;
     }, 0);
+  };
+
+  const formatPrice = (price: string): string => {
+    const numPrice = parseFloat(price);
+    if (isNaN(numPrice)) return price;
+    const rate = exchangeRates[selectedCurrency] || 1;
+    return (numPrice * rate).toFixed(2);
   };
 
   const handleWhatsAppPayment = () => {
@@ -73,31 +86,31 @@ export const CartModal: React.FC<CartModalProps> = ({
 
     const exportData = items.map((item, index) => ({
       '№': index + 1,
-      'Название запчасти': item.part_name,
-      'Код запчасти': item.part_code,
+      'Артикул': item.part_code,
+      'Описание': item.part_name,
       'Количество': item.quantity,
-      'Цена (AED)': parseFloat(item.price).toFixed(2),
-      'Сумма (AED)': (parseFloat(item.price) * item.quantity).toFixed(2)
+      [`Цена (${selectedCurrency})`]: formatPrice(item.price),
+      [`Сумма (${selectedCurrency})`]: (parseFloat(formatPrice(item.price)) * item.quantity).toFixed(2)
     }));
 
     exportData.push({
       '№': '',
-      'Название запчасти': '',
-      'Код запчасти': '',
+      'Артикул': '',
+      'Описание': '',
       'Количество': '',
-      'Цена (AED)': 'Общая сумма:',
-      'Сумма (AED)': calculateTotal().toFixed(2)
+      [`Цена (${selectedCurrency})`]: 'Общая сумма:',
+      [`Сумма (${selectedCurrency})`]: calculateTotal().toFixed(2)
     });
 
     const ws = XLSX.utils.json_to_sheet(exportData);
 
     const colWidths = [
       { wch: 5 },
-      { wch: 40 },
       { wch: 20 },
+      { wch: 40 },
       { wch: 12 },
-      { wch: 12 },
-      { wch: 12 }
+      { wch: 15 },
+      { wch: 15 }
     ];
     ws['!cols'] = colWidths;
 
@@ -153,21 +166,35 @@ export const CartModal: React.FC<CartModalProps> = ({
                       </div>
                       <h3 className="text-white font-medium mb-2">{item.part_name}</h3>
                       <div className="flex items-center space-x-4">
-                        <span className="text-green-400 font-semibold">{item.price}</span>
+                        <span className="text-green-400 font-semibold">
+                          {formatPrice(item.price)} {selectedCurrency}
+                        </span>
                         <div className="flex items-center space-x-2">
                           <label className="text-gray-500 text-sm">Количество:</label>
                           <input
                             type="number"
-                            min="0"
+                            min="1"
+                            max={parseInt(item.max_qty || '999999')}
                             value={item.quantity}
                             onChange={(e) => {
-                              const value = parseInt(e.target.value) || 0;
-                              onUpdateQuantity(item.id, value >= 0 ? value : 0);
+                              const value = parseInt(e.target.value) || 1;
+                              const maxQty = parseInt(item.max_qty || '999999');
+                              if (value > maxQty) {
+                                alert(`Максимальное количество: ${maxQty}`);
+                                onUpdateQuantity(item.id, maxQty);
+                              } else {
+                                onUpdateQuantity(item.id, value >= 1 ? value : 1);
+                              }
                             }}
                             className="w-20 px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white text-sm focus:outline-none focus:border-blue-500"
                           />
                         </div>
                       </div>
+                      {item.max_qty && parseInt(item.max_qty) < 999999 && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Доступно: {item.max_qty} шт.
+                        </p>
+                      )}
                     </div>
                     <button
                       onClick={() => onRemoveItem(item.id)}
@@ -188,7 +215,7 @@ export const CartModal: React.FC<CartModalProps> = ({
             <div className="flex items-center justify-between bg-gray-800/50 rounded-lg p-4 border border-gray-700">
               <span className="text-gray-300 text-lg font-semibold">Общая сумма:</span>
               <span className="text-green-400 text-2xl font-bold">
-                {calculateTotal().toFixed(2)} AED
+                {calculateTotal().toFixed(2)} {selectedCurrency}
               </span>
             </div>
 

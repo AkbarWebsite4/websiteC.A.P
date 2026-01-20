@@ -46,6 +46,7 @@ interface CartItem {
   brand: string;
   price: string;
   quantity: number;
+  max_qty?: string;
 }
 
 interface ExchangeRate {
@@ -186,13 +187,16 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
   const processMultipleExcelFiles = (files: File[]) => {
     setIsProcessing(true);
     const allProcessedData: PartData[] = [...partsData];
-    
+
     let processedFiles = 0;
-    
+
+    console.log(`Начало обработки ${files.length} файлов Excel...`);
+
     files.forEach((file, fileIndex) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
+          console.log(`Обработка файла: ${file.name}`);
           const data = new Uint8Array(e.target?.result as ArrayBuffer);
           const workbook = XLSX.read(data, { type: 'array' });
           const sheetName = workbook.SheetNames[0];
@@ -286,19 +290,24 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
           }
 
           processedFiles++;
+          console.log(`Файл ${file.name} обработан. Всего позиций: ${allProcessedData.length}`);
 
           if (processedFiles === files.length) {
+            console.log(`Все ${files.length} файлов обработаны. Всего позиций: ${allProcessedData.length}`);
             setPartsData(allProcessedData);
             localStorage.setItem('capCatalog', JSON.stringify(allProcessedData));
             sessionStorage.setItem('capCatalog', JSON.stringify(allProcessedData));
             const backupKey = `capCatalog_backup_${Date.now()}`;
             localStorage.setItem(backupKey, JSON.stringify(allProcessedData));
 
+            console.log('Начало сохранения в базу данных...');
             saveCatalogToDatabase(allProcessedData).then(savedCount => {
               setIsProcessing(false);
+              console.log(`Сохранение завершено. Сохранено: ${savedCount} из ${allProcessedData.length}`);
               alert(`Каталог обновлен! Загружено ${allProcessedData.length} позиций. Сохранено в базу данных: ${savedCount} позиций.`);
               setSelectedFiles([]);
               setShowUploadSection(false);
+              loadCatalogFromDatabase();
             }).catch(error => {
               console.error('Ошибка сохранения в базу:', error);
               setIsProcessing(false);
@@ -400,7 +409,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
             part_name: part.name,
             brand: part.brand,
             price: part.price,
-            quantity: quantityToAdd
+            quantity: quantityToAdd,
+            max_qty: part.qty || '999999'
           }])
           .select();
 
@@ -485,7 +495,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
         console.log('Таблица успешно очищена');
       }
 
-      const batchSize = 1000;
+      const batchSize = 500;
       let successCount = 0;
 
       for (let i = 0; i < catalogData.length; i += batchSize) {
@@ -503,19 +513,23 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
           qty: item.qty || '0'
         }));
 
-        const { error } = await supabase
-          .from('catalog_parts')
-          .insert(dataToInsert);
+        try {
+          const { error } = await supabase
+            .from('catalog_parts')
+            .insert(dataToInsert);
 
-        if (error) {
-          console.error(`Ошибка сохранения батча ${i}-${i + batchSize}:`, error);
-          console.error('Детали ошибки:', error);
-        } else {
-          successCount += batch.length;
-          console.log(`Сохранено ${successCount} из ${catalogData.length} позиций`);
+          if (error) {
+            console.error(`Ошибка сохранения батча ${i}-${i + batchSize}:`, error);
+            console.error('Детали ошибки:', error);
+          } else {
+            successCount += batch.length;
+            console.log(`Сохранено ${successCount} из ${catalogData.length} позиций`);
+          }
+        } catch (batchError) {
+          console.error(`Критическая ошибка в батче ${i}-${i + batchSize}:`, batchError);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
 
       console.log(`Сохранение завершено: ${successCount} из ${catalogData.length} позиций`);
@@ -530,8 +544,10 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
     try {
       let allData: any[] = [];
       let from = 0;
-      const batchSize = 5000;
+      const batchSize = 10000;
       let hasMore = true;
+
+      console.log('Начало загрузки каталога из базы данных...');
 
       while (hasMore) {
         const { data, error } = await supabase
@@ -544,6 +560,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
         if (data && data.length > 0) {
           allData = [...allData, ...data];
+          console.log(`Загружено ${allData.length} позиций...`);
           from += batchSize;
           hasMore = data.length === batchSize;
         } else {
@@ -1087,6 +1104,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
         onRemoveItem={removeFromCart}
         onClearCart={clearCart}
         onUpdateQuantity={updateCartQuantity}
+        selectedCurrency={selectedCurrency}
+        exchangeRates={exchangeRates}
       />
 
       {/* Hidden File Input for Quick Upload */}
