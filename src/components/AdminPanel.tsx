@@ -12,6 +12,7 @@ interface PartData {
   category: string;
   description?: string;
   availability: string;
+  qty?: string;
 }
 
 interface AdminPanelProps {
@@ -109,7 +110,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
         weight: item.weight,
         category: item.category,
         description: item.description,
-        availability: item.availability
+        availability: item.availability,
+        qty: item.qty
       }));
       setAllCatalogData(catalogData);
     } catch (error) {
@@ -172,34 +174,51 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
           // Поиск колонки с кодом запчасти (поддержка разных названий)
           const partNoIndex = headerRow.findIndex(header => {
             if (!header) return false;
-            const headerLower = header.toString().toLowerCase();
-            return headerLower === 'part no' || 
+            const headerLower = header.toString().toLowerCase().trim();
+            return headerLower === 'part no' ||
                    headerLower === 'part no.' ||
-                   headerLower === 'partno';
+                   headerLower === 'partno' ||
+                   headerLower === 'part_no' ||
+                   headerLower === 'name';
           });
-          
+
           // Поиск колонки с описанием
           const descriptionIndex = headerRow.findIndex(header => {
             if (!header) return false;
-            const headerLower = header.toString().toLowerCase();
+            const headerLower = header.toString().toLowerCase().trim();
             return headerLower === 'part name' ||
-                   headerLower.includes('description') || 
-                   headerLower === 'discrapion';
+                   headerLower === 'partname' ||
+                   headerLower.includes('description') ||
+                   headerLower === 'discrapion' ||
+                   headerLower === 'name';
           });
-          
+
           // Поиск колонки с ценой (поддержка разных названий)
           const priceIndex = headerRow.findIndex(header => {
             if (!header) return false;
-            const headerLower = header.toString().toLowerCase();
+            const headerLower = header.toString().toLowerCase().trim();
             return headerLower === 'price in aed' ||
+                   headerLower === 'price/aed' ||
+                   headerLower === 'price' ||
                    headerLower === 'u/p aed' ||
                    headerLower === 'nett';
           });
 
+          // Поиск колонки с количеством
+          const qtyIndex = headerRow.findIndex(header => {
+            if (!header) return false;
+            const headerLower = header.toString().toLowerCase().trim();
+            return headerLower === 'available qty' ||
+                   headerLower === 'qty' ||
+                   headerLower === 'quantity' ||
+                   headerLower === 'quantity on hand';
+          });
+
           console.log('Найденные индексы:', {
             partNoIndex,
-            descriptionIndex, 
-            priceIndex
+            descriptionIndex,
+            priceIndex,
+            qtyIndex
           });
 
           if (partNoIndex === -1) {
@@ -211,18 +230,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
           if (priceIndex === -1) {
             console.warn(`В файле ${file.name} не найдена колонка с ценой`);
           }
+          if (qtyIndex === -1) {
+            console.warn(`В файле ${file.name} не найдена колонка с количеством`);
+          }
 
           // Обработать данные начиная со второй строки
           for (let i = 1; i < jsonData.length; i++) {
             const row = jsonData[i] as any[];
-            
+
             if (row && row.length > 0 && partNoIndex !== -1) {
               const partNo = row[partNoIndex]?.toString().trim() || '';
               const description = descriptionIndex !== -1 ? (row[descriptionIndex]?.toString().trim() || '') : '';
               const price = priceIndex !== -1 ? (row[priceIndex]?.toString().trim() || '') : '';
+              const qty = qtyIndex !== -1 ? (row[qtyIndex]?.toString().trim() || '') : '';
 
               if (partNo && partNo !== '') {
-                // Проверить, не существует ли уже такой код
+                let qtyValue = '999';
+                let availabilityStatus = 'В наличии';
+
+                if (qty && qty !== '') {
+                  const qtyNum = parseFloat(qty);
+                  if (!isNaN(qtyNum)) {
+                    qtyValue = Math.floor(qtyNum).toString();
+                    availabilityStatus = qtyNum > 0 ? 'В наличии' : 'Нет в наличии';
+                  }
+                }
+
                 const existingIndex = allProcessedData.findIndex(item => item.code === partNo);
                 const newItem = {
                   code: partNo,
@@ -232,14 +265,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
                   weight: '',
                   category: `Файл ${fileIndex + 1}: ${file.name}`,
                   description: description || partNo,
-                  availability: 'В наличии'
+                  availability: availabilityStatus,
+                  qty: qtyValue
                 };
-                
+
                 if (existingIndex >= 0) {
-                  // Обновить существующий элемент
                   allProcessedData[existingIndex] = newItem;
                 } else {
-                  // Добавить новый элемент
                   allProcessedData.push(newItem);
                 }
               } else {
@@ -295,7 +327,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
           category: item.category,
           description: item.description,
           availability: item.availability,
-          qty: item.availability === 'В наличии' ? '999' : '0'
+          qty: item.qty || (item.availability === 'В наличии' ? '999' : '0')
         }));
 
         const batchSize = 5000;
