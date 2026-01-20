@@ -318,19 +318,37 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
   const addToCart = async (part: PartData) => {
     try {
       const quantityToAdd = partQuantities[part.code] || 0;
+
+      if (quantityToAdd <= 0) {
+        alert('Укажите количество больше 0');
+        return;
+      }
+
+      const maxQty = parseInt(part.qty || '999999');
+      if (quantityToAdd > maxQty) {
+        alert(`Максимальное количество: ${maxQty}`);
+        return;
+      }
+
       const existingItem = cartItems.find(item => item.part_code === part.code);
 
       if (existingItem) {
+        const newQuantity = existingItem.quantity + quantityToAdd;
+        if (newQuantity > maxQty) {
+          alert(`Максимальное количество: ${maxQty}. В корзине уже ${existingItem.quantity} шт.`);
+          return;
+        }
+
         const { error } = await supabase
           .from('cart_items')
-          .update({ quantity: existingItem.quantity + quantityToAdd, updated_at: new Date().toISOString() })
+          .update({ quantity: newQuantity, updated_at: new Date().toISOString() })
           .eq('id', existingItem.id);
 
         if (error) throw error;
 
         setCartItems(prev => prev.map(item =>
           item.id === existingItem.id
-            ? { ...item, quantity: item.quantity + quantityToAdd }
+            ? { ...item, quantity: newQuantity }
             : item
         ));
       } else {
@@ -352,11 +370,11 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
         }
       }
 
-      setPartQuantities(prev => ({ ...prev, [part.code]: 1 }));
+      setPartQuantities(prev => ({ ...prev, [part.code]: 0 }));
       alert(`Добавлено ${quantityToAdd} шт. в корзину`);
     } catch (error) {
       console.error('Ошибка добавления в корзину:', error);
-      alert('Ошибка добавления в корзину');
+      alert(`Ошибка добавления в корзину: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     }
   };
 
@@ -856,11 +874,19 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                     <label className="block text-gray-800 text-sm mb-1 font-medium">Количество:</label>
                     <input
                       type="number"
-                      min="0"
-                      value={partQuantities[part.code] || 0}
+                      min="1"
+                      max={parseInt(part.qty || '999999')}
+                      value={partQuantities[part.code] || ''}
+                      placeholder="0"
                       onChange={(e) => {
                         const value = parseInt(e.target.value) || 0;
-                        setPartQuantities(prev => ({ ...prev, [part.code]: value >= 0 ? value : 0 }));
+                        const maxQty = parseInt(part.qty || '999999');
+                        if (value > maxQty) {
+                          alert(`Максимальное количество: ${maxQty}`);
+                          setPartQuantities(prev => ({ ...prev, [part.code]: maxQty }));
+                        } else {
+                          setPartQuantities(prev => ({ ...prev, [part.code]: value >= 0 ? value : 0 }));
+                        }
                       }}
                       className="w-full px-3 py-2 bg-white border-2 border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-blue-500"
                     />
@@ -869,7 +895,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                   {/* Add to Cart Button */}
                   <button
                     onClick={() => addToCart(part)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
+                    disabled={!partQuantities[part.code] || partQuantities[part.code] <= 0}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Добавить в корзину</span>
@@ -929,15 +956,25 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
               <div className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2 text-center">Удобная оплата</h3>
                 <p className="text-gray-800 text-center mb-6">
-                  Удобная оплата через Dc - Alif для вашего комфорта
+                  Удобная оплата через DC Money и Alif для вашего комфорта
                 </p>
-                <div className="flex justify-center">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                   <div className="bg-white p-4 rounded-xl shadow-lg">
+                    <h4 className="text-lg font-bold text-gray-900 mb-3 text-center">DC Money</h4>
                     <img
                       src="/QR Dc .jpg"
-                      alt="QR код для оплаты Dc - Alif"
-                      className="w-full h-auto max-w-md"
-                      style={{ aspectRatio: '16/9', objectFit: 'contain' }}
+                      alt="QR код для оплаты DC Money"
+                      className="w-full h-auto"
+                      style={{ maxHeight: '300px', objectFit: 'contain' }}
+                    />
+                  </div>
+                  <div className="bg-white p-4 rounded-xl shadow-lg">
+                    <h4 className="text-lg font-bold text-gray-900 mb-3 text-center">Alif</h4>
+                    <img
+                      src="/qr_alif_2.jpg"
+                      alt="QR код для оплаты Alif"
+                      className="w-full h-auto"
+                      style={{ maxHeight: '300px', objectFit: 'contain' }}
                     />
                   </div>
                 </div>

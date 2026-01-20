@@ -64,6 +64,13 @@ export const CartModal: React.FC<CartModalProps> = ({
   };
 
   const handleExportToExcel = () => {
+    const defaultFileName = `Заказ_${new Date().toLocaleDateString('ru-RU').replace(/\./g, '-')}`;
+    const userFileName = prompt('Введите название файла:', defaultFileName);
+
+    if (!userFileName) {
+      return;
+    }
+
     const exportData = items.map((item, index) => ({
       '№': index + 1,
       'Название запчасти': item.part_name,
@@ -97,7 +104,7 @@ export const CartModal: React.FC<CartModalProps> = ({
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Заказ');
 
-    const fileName = `Заказ_${new Date().toLocaleDateString('ru-RU').replace(/\./g, '-')}.xlsx`;
+    const fileName = userFileName.endsWith('.xlsx') ? userFileName : `${userFileName}.xlsx`;
     XLSX.writeFile(wb, fileName);
   };
 
