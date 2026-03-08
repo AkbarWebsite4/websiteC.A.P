@@ -172,32 +172,43 @@ const AuthPage = () => {
 
   if (showForgotPassword) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
-        <div className="max-w-md w-full">
-          <div className="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-700">
-            <h2 className="text-2xl font-bold text-white mb-6">Забыли пароль?</h2>
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 relative">
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(/background_cap_with_avto_details.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          <div className="absolute inset-0 bg-white/85"></div>
+        </div>
+        <div className="max-w-md w-full relative z-10">
+          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border-2 border-blue-500/30">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Забыли пароль?</h2>
 
             {error && (
-              <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4">
-                <p className="text-red-400 text-sm">{error}</p>
+              <div className="bg-red-500/20 border border-red-600 rounded-lg p-3 mb-4">
+                <p className="text-red-700 text-sm font-medium">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="bg-green-500/20 border border-green-500 rounded-lg p-3 mb-4">
-                <p className="text-green-400 text-sm">{success}</p>
+              <div className="bg-green-500/20 border border-green-600 rounded-lg p-3 mb-4">
+                <p className="text-green-700 text-sm font-medium">{success}</p>
               </div>
             )}
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
                   type="email"
                   value={resetEmail}
                   onChange={(e) => setResetEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                   placeholder="Введите ваш email"
                 />
               </div>
@@ -206,7 +217,7 @@ const AuthPage = () => {
             <button
               onClick={handleForgotPassword}
               disabled={isLoading || !resetEmail}
-              className="w-full bg-[#144374] hover:bg-[#1a5490] text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4 shadow-lg"
             >
               {isLoading ? 'Отправка...' : 'Отправить код'}
             </button>
@@ -218,7 +229,7 @@ const AuthPage = () => {
                 setError('');
                 setSuccess('');
               }}
-              className="w-full text-gray-400 hover:text-white py-2 text-sm transition-colors"
+              className="w-full text-gray-600 hover:text-gray-900 py-2 text-sm font-medium transition-colors"
             >
               Вернуться к входу
             </button>
@@ -229,16 +240,27 @@ const AuthPage = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
-      <div className="max-w-md w-full my-8">
-        <div className="bg-gray-900 rounded-2xl shadow-2xl p-8 border border-gray-700">
-          <div className="flex border-b border-gray-700 mb-6">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 relative">
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url(/background_cap_with_avto_details.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="absolute inset-0 bg-white/85"></div>
+      </div>
+      <div className="max-w-md w-full my-8 relative z-10">
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border-2 border-blue-500/30">
+          <div className="flex border-b border-gray-300 mb-6">
             <button
               onClick={() => setIsLoginMode(true)}
               className={`flex-1 py-3 px-4 text-center font-semibold transition-colors ${
                 isLoginMode
-                  ? 'text-[#144374] border-b-2 border-[#144374]'
-                  : 'text-gray-400 hover:text-gray-300'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-800'
               }`}
             >
               Вход
@@ -247,8 +269,8 @@ const AuthPage = () => {
               onClick={() => setIsLoginMode(false)}
               className={`flex-1 py-3 px-4 text-center font-semibold transition-colors ${
                 !isLoginMode
-                  ? 'text-[#144374] border-b-2 border-[#144374]'
-                  : 'text-gray-400 hover:text-gray-300'
+                  ? 'text-blue-600 border-b-2 border-blue-600'
+                  : 'text-gray-600 hover:text-gray-800'
               }`}
             >
               Регистрация
@@ -256,14 +278,14 @@ const AuthPage = () => {
           </div>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="bg-red-500/20 border border-red-600 rounded-lg p-3 mb-4">
+              <p className="text-red-700 text-sm font-medium">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="bg-green-500/20 border border-green-500 rounded-lg p-3 mb-4">
-              <p className="text-green-400 text-sm">{success}</p>
+            <div className="bg-green-500/20 border border-green-600 rounded-lg p-3 mb-4">
+              <p className="text-green-700 text-sm font-medium">{success}</p>
             </div>
           )}
 
@@ -271,45 +293,45 @@ const AuthPage = () => {
             {!isLoginMode && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">ФИО</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ФИО</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                     <input
                       type="text"
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                      className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                       placeholder="Введите ваше ФИО"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Название компании/магазина</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Название компании/магазина</label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                     <input
                       type="text"
                       required
                       value={formData.companyName}
                       onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                      className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                       placeholder="Введите название компании/магазина"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Номер телефона</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Номер телефона</label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                     <input
                       type="tel"
                       required
                       value={formData.phoneNumber}
                       onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                      className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                       placeholder="Введите номер телефона"
                     />
                   </div>
@@ -318,15 +340,15 @@ const AuthPage = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                   placeholder="Введите ваш email"
                 />
               </div>
@@ -334,15 +356,15 @@ const AuthPage = () => {
 
             {!isLoginMode && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Адрес</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Адрес</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                   <input
                     type="text"
                     required
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                    className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                     placeholder="Введите ваш адрес"
                   />
                 </div>
@@ -350,17 +372,17 @@ const AuthPage = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 {isLoginMode ? 'Пароль' : 'Придумайте пароль'}
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <input
                   type="password"
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                  className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                   placeholder="Введите пароль"
                 />
               </div>
@@ -368,15 +390,15 @@ const AuthPage = () => {
 
             {!isLoginMode && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Подтвердите пароль</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Подтвердите пароль</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                   <input
                     type="password"
                     required
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#144374] focus:ring-2 focus:ring-[#144374]/20"
+                    className="w-full pl-10 pr-4 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                     placeholder="Повторите пароль"
                   />
                 </div>
@@ -388,7 +410,7 @@ const AuthPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowForgotPassword(true)}
-                  className="text-sm text-[#144374] hover:text-[#1a5490] transition-colors"
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors"
                 >
                   Забыли пароль?
                 </button>
@@ -398,14 +420,14 @@ const AuthPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-lg font-semibold text-white bg-[#144374] hover:bg-[#1a5490] focus:outline-none focus:ring-2 focus:ring-[#144374]/50 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 rounded-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Загрузка...' : (isLoginMode ? 'Войти' : 'Отправить запрос на регистрацию')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <a href="/" className="text-gray-400 hover:text-white text-sm transition-colors">
+            <a href="/" className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
               ← Вернуться на главную
             </a>
           </div>

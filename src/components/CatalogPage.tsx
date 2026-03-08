@@ -163,7 +163,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
     const interval = setInterval(() => {
       updateExchangeRatesFromAPI();
       fetchExchangeRates();
-    }, 3600000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
@@ -186,7 +186,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
   const processMultipleExcelFiles = (files: File[]) => {
     setIsProcessing(true);
-    const allProcessedData: PartData[] = [...partsData];
+    setUploadStatusMessage({ message: 'Начинается обработка файлов...', type: 'info' });
+    const allProcessedData: PartData[] = [];
 
     let processedFiles = 0;
 
@@ -197,11 +198,12 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
       reader.onload = (e) => {
         try {
           console.log(`Обработка файла: ${file.name}`);
+          setUploadStatusMessage({ message: `Обработка файла ${fileIndex + 1} из ${files.length}: ${file.name}`, type: 'info' });
           const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: 'array' });
+          const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '', raw: false });
 
           const headerRow = jsonData[0] as string[];
           
@@ -249,43 +251,34 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
           for (let i = 1; i < jsonData.length; i++) {
             const row = jsonData[i] as any[];
 
-            if (row && row.length > 0 && partNoIndex !== -1) {
-              const partNo = row[partNoIndex]?.toString().trim() || '';
-              const description = descriptionIndex !== -1 ? (row[descriptionIndex]?.toString().trim() || '') : '';
-              const price = priceIndex !== -1 ? (row[priceIndex]?.toString().trim() || '') : '';
-              const qty = qtyIndex !== -1 ? (row[qtyIndex]?.toString().trim() || '') : '';
+            if (!row || row.length === 0) continue;
+            if (partNoIndex === -1) continue;
 
-              if (i <= 3) {
-                console.log(`Row ${i} data:`, {
-                  partNo,
-                  description,
-                  price,
-                  qty,
-                  qtyRaw: row[qtyIndex]
-                });
-              }
+            const partNo = row[partNoIndex]?.toString().trim() || '';
+            if (!partNo || partNo === '' || partNo === 'undefined' || partNo === 'null') continue;
 
-              if (partNo && partNo !== '') {
-                const existingIndex = allProcessedData.findIndex(item => item.code === partNo);
-                const cleanPrice = price && price !== '' ? price.toString().replace(/[^\d.]/g, '') : '';
-                const newItem = {
-                  code: partNo,
-                  name: description || partNo,
-                  brand: '',
-                  price: cleanPrice || '0',
-                  weight: '',
-                  category: 'Автозапчасти',
-                  description: description || partNo,
-                  availability: 'В наличии',
-                  qty: qty || '0'
-                };
-                
-                if (existingIndex >= 0) {
-                  allProcessedData[existingIndex] = newItem;
-                } else {
-                  allProcessedData.push(newItem);
-                }
-              }
+            const description = descriptionIndex !== -1 ? (row[descriptionIndex]?.toString().trim() || '') : '';
+            const price = priceIndex !== -1 ? (row[priceIndex]?.toString().trim() || '') : '';
+            const qty = qtyIndex !== -1 ? (row[qtyIndex]?.toString().trim() || '') : '';
+
+            const cleanPrice = price && price !== '' ? price.toString().replace(/[^\d.]/g, '') : '';
+            const newItem: PartData = {
+              code: partNo,
+              name: description || partNo,
+              brand: '',
+              price: cleanPrice || '0',
+              weight: '',
+              category: 'Автозапчасти',
+              description: description || partNo,
+              availability: 'В наличии',
+              qty: qty || '0'
+            };
+
+            const existingIndex = allProcessedData.findIndex(item => item.code === partNo);
+            if (existingIndex >= 0) {
+              allProcessedData[existingIndex] = newItem;
+            } else {
+              allProcessedData.push(newItem);
             }
           }
 
@@ -294,26 +287,28 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
           if (processedFiles === files.length) {
             console.log(`Все ${files.length} файлов обработаны. Всего позиций: ${allProcessedData.length}`);
-            setPartsData(allProcessedData);
-            localStorage.setItem('capCatalog', JSON.stringify(allProcessedData));
-            sessionStorage.setItem('capCatalog', JSON.stringify(allProcessedData));
-            const backupKey = `capCatalog_backup_${Date.now()}`;
-            localStorage.setItem(backupKey, JSON.stringify(allProcessedData));
+            setUploadStatusMessage({ message: `Все файлы обработаны. Найдено ${allProcessedData.length} позиций. Сохранение в базу данных...`, type: 'info' });
 
             console.log('Начало сохранения в базу данных...');
             saveCatalogToDatabase(allProcessedData).then(savedCount => {
+              setPartsData(allProcessedData);
               setIsProcessing(false);
               console.log(`Сохранение завершено. Сохранено: ${savedCount} из ${allProcessedData.length}`);
-              alert(`Каталог обновлен! Загружено ${allProcessedData.length} позиций. Сохранено в базу данных: ${savedCount} позиций.`);
+              setUploadStatusMessage({ message: `Каталог обновлен! Загружено ${allProcessedData.length} позиций. Сохранено в базу: ${savedCount}.`, type: 'success' });
               setSelectedFiles([]);
-              setShowUploadSection(false);
-              loadCatalogFromDatabase();
+              setTimeout(() => {
+                setShowUploadSection(false);
+                setUploadStatusMessage(null);
+                loadCatalogFromDatabase();
+              }, 3000);
             }).catch(error => {
               console.error('Ошибка сохранения в базу:', error);
               setIsProcessing(false);
-              alert(`Каталог обновлен! Загружено ${allProcessedData.length} позиций. Ошибка сохранения в базу данных.`);
+              setUploadStatusMessage({ message: `Ошибка сохранения: ${error.message}`, type: 'error' });
               setSelectedFiles([]);
-              setShowUploadSection(false);
+              setTimeout(() => {
+                setUploadStatusMessage(null);
+              }, 5000);
             });
           }
         } catch (error) {
@@ -493,6 +488,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
   const saveCatalogToDatabase = async (catalogData: PartData[]) => {
     try {
       console.log(`Начало сохранения ${catalogData.length} позиций в базу данных...`);
+      setUploadStatusMessage({ message: 'Очистка старых данных...', type: 'info' });
 
       const { error: deleteError } = await supabase
         .from('catalog_parts')
@@ -501,15 +497,17 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
       if (deleteError) {
         console.error('Ошибка очистки таблицы:', deleteError);
+        throw new Error(`Ошибка очистки: ${deleteError.message}`);
       } else {
         console.log('Таблица успешно очищена');
       }
 
-      const batchSize = 500;
+      const batchSize = 1000;
       let successCount = 0;
 
       for (let i = 0; i < catalogData.length; i += batchSize) {
         const batch = catalogData.slice(i, i + batchSize);
+        setUploadStatusMessage({ message: `Сохранение ${i + 1}-${Math.min(i + batchSize, catalogData.length)} из ${catalogData.length}...`, type: 'info' });
 
         const dataToInsert = batch.map(item => ({
           code: item.code,
@@ -518,35 +516,32 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
           price: item.price,
           weight: item.weight || '',
           category: item.category,
-          description: item.description,
+          description: item.description || item.name,
           availability: item.availability,
           qty: item.qty || '0'
         }));
 
-        try {
-          const { error } = await supabase
-            .from('catalog_parts')
-            .insert(dataToInsert);
+        const { error, count } = await supabase
+          .from('catalog_parts')
+          .insert(dataToInsert)
+          .select('code', { count: 'exact', head: true });
 
-          if (error) {
-            console.error(`Ошибка сохранения батча ${i}-${i + batchSize}:`, error);
-            console.error('Детали ошибки:', error);
-          } else {
-            successCount += batch.length;
-            console.log(`Сохранено ${successCount} из ${catalogData.length} позиций`);
-          }
-        } catch (batchError) {
-          console.error(`Критическая ошибка в батче ${i}-${i + batchSize}:`, batchError);
+        if (error) {
+          console.error(`Ошибка сохранения батча ${i}-${i + batchSize}:`, error);
+          throw new Error(`Ошибка сохранения: ${error.message}`);
+        } else {
+          successCount += batch.length;
+          console.log(`Сохранено ${successCount} из ${catalogData.length} позиций`);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
 
       console.log(`Сохранение завершено: ${successCount} из ${catalogData.length} позиций`);
       return successCount;
     } catch (error) {
       console.error('Ошибка сохранения каталога в базу:', error);
-      return 0;
+      throw error;
     }
   };
 
