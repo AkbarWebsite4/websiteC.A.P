@@ -11,25 +11,25 @@ export const ProductsRu: React.FC = () => {
       icon: Droplets,
       title: "Моторные части",
       description: "Высококачественные компоненты для максимальной защиты и производительности вашего автомобиля.",
-      image: "/motornie_chasti_2.jpg"
+      image: "/avtomarket.jpg"
     },
     {
       icon: Filter,
       title: "Ходовые части",
       description: "Профессиональные компоненты подвески и ходовой части для комфортной и безопасной езды.",
-      image: "/xodovie_chasti.jpg"
+      image: "/originall.jpg"
     },
     {
       icon: Zap,
       title: "Моторное масло",
       description: "Премиальные синтетические и обычные масла для максимальной защиты двигателя и его долговечности.",
-      image: "/motornoe_maslo_2.jpg"
+      image: "/valvoline.jpg"
     },
     {
       icon: Disc,
       title: "Кузовные части",
       description: "Качественные кузовные элементы для восстановления и улучшения внешнего вида автомобиля.",
-      image: "/kuzovnie_chasti_2.jpg"
+      image: "/toto.jpg"
     }
   ];
 
