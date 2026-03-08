@@ -178,57 +178,113 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
+    console.log('handleFileUpload called, files count:', files.length);
+
     if (files.length > 0) {
       setSelectedFiles(files);
+      console.log('Starting to process files:', files.map(f => f.name));
       processMultipleExcelFiles(files);
+    } else {
+      console.warn('No files selected');
+      alert('Пожалуйста, выберите файлы Excel');
+    }
+
+    if (event.target) {
+      event.target.value = '';
     }
   };
 
   const processMultipleExcelFiles = (files: File[]) => {
-    setIsProcessing(true);
-    setUploadStatusMessage({ message: 'Начинается обработка файлов...', type: 'info' });
-    const allProcessedData: PartData[] = [];
+    if (!files || files.length === 0) {
+      alert('Файлы не выбраны');
+      return;
+    }
 
+    console.log(`=== НАЧАЛО ОБРАБОТКИ ${files.length} ФАЙЛОВ ===`);
+    setIsProcessing(true);
+    setUploadStatusMessage({ message: `Начинается обработка ${files.length} файлов...`, type: 'info' });
+
+    const allProcessedData: PartData[] = [];
     let processedFiles = 0;
 
-    console.log(`Начало обработки ${files.length} файлов Excel...`);
-
     files.forEach((file, fileIndex) => {
+      console.log(`\n--- Файл ${fileIndex + 1}/${files.length}: ${file.name} (${(file.size / 1024).toFixed(2)} KB) ---`);
       const reader = new FileReader();
+
+      reader.onerror = (error) => {
+        console.error(`Ошибка чтения файла ${file.name}:`, error);
+        processedFiles++;
+        if (processedFiles === files.length) {
+          setIsProcessing(false);
+          alert(`Ошибка чтения файла ${file.name}`);
+        }
+      };
+
       reader.onload = (e) => {
         try {
-          console.log(`Обработка файла: ${file.name}`);
           setUploadStatusMessage({ message: `Обработка файла ${fileIndex + 1} из ${files.length}: ${file.name}`, type: 'info' });
           const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: 'array', cellDates: true, cellNF: false, cellText: false });
+          console.log(`Размер данных: ${data.length} байт`);
+
+          const workbook = XLSX.read(data, {
+            type: 'array',
+            cellDates: false,
+            cellNF: false,
+            cellText: false,
+            raw: true
+          });
+
+          console.log(`Листов в файле: ${workbook.SheetNames.length}`);
           const sheetName = workbook.SheetNames[0];
+          console.log(`Обработка листа: ${sheetName}`);
+
           const worksheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '', raw: false });
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1,
+            defval: '',
+            raw: true,
+            blankrows: false
+          });
+
+          console.log(`Всего строк в файле: ${jsonData.length}`);
+
+          if (jsonData.length === 0) {
+            console.error(`Файл ${file.name} пустой`);
+            throw new Error(`Файл ${file.name} не содержит данных`);
+          }
 
           const headerRow = jsonData[0] as string[];
-          
+          console.log(`Заголовки (первая строка):`, headerRow);
+
           const partNoIndex = headerRow.findIndex(header => {
             if (!header) return false;
-            const headerLower = header.toString().toLowerCase();
-            return headerLower === 'part no' || 
+            const headerLower = header.toString().toLowerCase().trim();
+            return headerLower === 'part no' ||
                    headerLower === 'part no.' ||
-                   headerLower === 'partno';
+                   headerLower === 'partno' ||
+                   headerLower === 'part_no' ||
+                   headerLower.includes('part no');
           });
-          
+
           const descriptionIndex = headerRow.findIndex(header => {
             if (!header) return false;
-            const headerLower = header.toString().toLowerCase();
+            const headerLower = header.toString().toLowerCase().trim();
             return headerLower === 'part name' ||
-                   headerLower.includes('description') || 
-                   headerLower === 'discrapion';
+                   headerLower === 'description' ||
+                   headerLower === 'discrapion' ||
+                   headerLower.includes('description') ||
+                   headerLower.includes('name');
           });
-          
+
           const priceIndex = headerRow.findIndex(header => {
             if (!header) return false;
-            const headerLower = header.toString().toLowerCase();
+            const headerLower = header.toString().toLowerCase().trim();
             return headerLower === 'price in aed' ||
                    headerLower === 'u/p aed' ||
-                   headerLower === 'nett';
+                   headerLower === 'nett' ||
+                   headerLower === 'price' ||
+                   headerLower.includes('price') ||
+                   headerLower.includes('aed');
           });
 
           const qtyIndex = headerRow.findIndex(header => {
@@ -240,22 +296,34 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                    headerLower.includes('qty');
           });
 
-          console.log('Headers found:', {
+          console.log(`Индексы колонок:`, {
             partNo: partNoIndex,
             description: descriptionIndex,
             price: priceIndex,
             qty: qtyIndex
           });
-          console.log('Header row:', headerRow);
+
+          if (partNoIndex === -1) {
+            console.error(`В файле ${file.name} не найдена колонка с кодом запчасти (Part No)`);
+            throw new Error(`В файле ${file.name} отсутствует колонка "Part No"`);
+          }
+
+          let addedCount = 0;
+          let skippedCount = 0;
 
           for (let i = 1; i < jsonData.length; i++) {
             const row = jsonData[i] as any[];
 
-            if (!row || row.length === 0) continue;
-            if (partNoIndex === -1) continue;
+            if (!row || row.length === 0) {
+              skippedCount++;
+              continue;
+            }
 
             const partNo = row[partNoIndex]?.toString().trim() || '';
-            if (!partNo || partNo === '' || partNo === 'undefined' || partNo === 'null') continue;
+            if (!partNo || partNo === '' || partNo === 'undefined' || partNo === 'null') {
+              skippedCount++;
+              continue;
+            }
 
             const description = descriptionIndex !== -1 ? (row[descriptionIndex]?.toString().trim() || '') : '';
             const price = priceIndex !== -1 ? (row[priceIndex]?.toString().trim() || '') : '';
@@ -279,48 +347,63 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
               allProcessedData[existingIndex] = newItem;
             } else {
               allProcessedData.push(newItem);
+              addedCount++;
             }
           }
 
+          console.log(`Файл ${file.name}: добавлено ${addedCount}, пропущено ${skippedCount}, всего накоплено ${allProcessedData.length}`);
+
           processedFiles++;
-          console.log(`Файл ${file.name} обработан. Всего позиций: ${allProcessedData.length}`);
+          console.log(`✓ Файл ${fileIndex + 1}/${files.length} обработан`);
 
           if (processedFiles === files.length) {
-            console.log(`Все ${files.length} файлов обработаны. Всего позиций: ${allProcessedData.length}`);
+            console.log(`\n=== ВСЕ ${files.length} ФАЙЛОВ ОБРАБОТАНЫ ===`);
+            console.log(`Всего уникальных позиций: ${allProcessedData.length}`);
             setUploadStatusMessage({ message: `Все файлы обработаны. Найдено ${allProcessedData.length} позиций. Сохранение в базу данных...`, type: 'info' });
 
-            console.log('Начало сохранения в базу данных...');
+            if (allProcessedData.length === 0) {
+              setIsProcessing(false);
+              setUploadStatusMessage({ message: 'Ошибка: не найдено данных для загрузки', type: 'error' });
+              setTimeout(() => setUploadStatusMessage(null), 5000);
+              return;
+            }
+
             saveCatalogToDatabase(allProcessedData).then(savedCount => {
               setPartsData(allProcessedData);
               setIsProcessing(false);
-              console.log(`Сохранение завершено. Сохранено: ${savedCount} из ${allProcessedData.length}`);
-              setUploadStatusMessage({ message: `Каталог обновлен! Загружено ${allProcessedData.length} позиций. Сохранено в базу: ${savedCount}.`, type: 'success' });
+              console.log(`\n✓ СОХРАНЕНИЕ ЗАВЕРШЕНО: ${savedCount} из ${allProcessedData.length}`);
+              setUploadStatusMessage({ message: `Успех! Загружено ${allProcessedData.length} позиций. Сохранено в базу: ${savedCount}.`, type: 'success' });
               setSelectedFiles([]);
+              alert(`Каталог успешно обновлен!\n\nЗагружено: ${allProcessedData.length} позиций\nСохранено в базу: ${savedCount} позиций`);
               setTimeout(() => {
                 setShowUploadSection(false);
                 setUploadStatusMessage(null);
                 loadCatalogFromDatabase();
               }, 3000);
             }).catch(error => {
-              console.error('Ошибка сохранения в базу:', error);
+              console.error('ОШИБКА СОХРАНЕНИЯ:', error);
               setIsProcessing(false);
               setUploadStatusMessage({ message: `Ошибка сохранения: ${error.message}`, type: 'error' });
+              alert(`Ошибка сохранения в базу данных:\n${error.message}`);
               setSelectedFiles([]);
               setTimeout(() => {
                 setUploadStatusMessage(null);
               }, 5000);
             });
           }
-        } catch (error) {
-          console.error(`Ошибка обработки файла ${file.name}:`, error);
+        } catch (error: any) {
+          console.error(`❌ ОШИБКА обработки файла ${file.name}:`, error);
+          setUploadStatusMessage({ message: `Ошибка в файле ${file.name}: ${error.message}`, type: 'error' });
           processedFiles++;
-          
+
           if (processedFiles === files.length) {
             setIsProcessing(false);
+            alert(`Ошибка обработки файла ${file.name}:\n${error.message}`);
           }
         }
       };
 
+      console.log(`Начало чтения файла ${file.name}...`);
       reader.readAsArrayBuffer(file);
     });
   };

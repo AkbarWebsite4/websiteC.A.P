@@ -21,30 +21,40 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const userStr = localStorage.getItem('catalogUser');
+      const userStr = localStorage.getItem('catalogUser') || sessionStorage.getItem('catalogUser');
+      console.log('Header checking user status:', userStr ? 'Found user data' : 'No user data');
+
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
+          console.log('Parsed user:', user);
           if (user.status === 'approved') {
-            setUserName(user.name || user.email);
+            const displayName = user.name || user.email?.split('@')[0] || 'User';
+            console.log('Setting user name:', displayName);
+            setUserName(displayName);
           } else {
+            console.log('User status not approved:', user.status);
             setUserName(null);
           }
         } catch (e) {
+          console.error('Error parsing user data:', e);
           setUserName(null);
         }
       } else {
+        console.log('No user data in storage');
         setUserName(null);
       }
     };
 
     checkUserStatus();
     window.addEventListener('storage', checkUserStatus);
+    window.addEventListener('focus', checkUserStatus);
 
-    const interval = setInterval(checkUserStatus, 1000);
+    const interval = setInterval(checkUserStatus, 500);
 
     return () => {
       window.removeEventListener('storage', checkUserStatus);
+      window.removeEventListener('focus', checkUserStatus);
       clearInterval(interval);
     };
   }, []);

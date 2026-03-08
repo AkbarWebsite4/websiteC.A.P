@@ -58,8 +58,28 @@ const AuthPage = () => {
         return;
       }
 
-      localStorage.setItem('catalogUser', JSON.stringify(data));
-      window.location.href = '/catalog.html';
+      const userData = {
+        id: data.id,
+        email: data.email,
+        name: data.name,
+        phone_number: data.phone_number,
+        company_name: data.company_name,
+        address: data.address,
+        status: data.status,
+        is_admin: data.is_admin,
+        created_at: data.created_at
+      };
+
+      console.log('Сохранение данных пользователя:', userData);
+      localStorage.setItem('catalogUser', JSON.stringify(userData));
+      sessionStorage.setItem('catalogUser', JSON.stringify(userData));
+
+      console.log('Данные сохранены в localStorage и sessionStorage');
+      console.log('Проверка localStorage:', localStorage.getItem('catalogUser'));
+
+      setTimeout(() => {
+        window.location.href = '/catalog.html';
+      }, 100);
     } catch (error: any) {
       setError('Ошибка входа: ' + error.message);
     } finally {
