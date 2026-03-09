@@ -21,16 +21,11 @@ export const HeaderRu: React.FC = () => {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const userStr = localStorage.getItem('catalogUser') || sessionStorage.getItem('catalogUser') || localStorage.getItem('capCurrentUser');
+      const userStr = localStorage.getItem('capCurrentUser');
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
-          if (user.status === 'approved' || !user.status) {
-            const displayName = user.name || user.full_name || user.email?.split('@')[0] || 'Пользователь';
-            setUserName(displayName);
-          } else {
-            setUserName(null);
-          }
+          setUserName(user.full_name || user.email);
         } catch (e) {
           setUserName(null);
         }
@@ -41,13 +36,11 @@ export const HeaderRu: React.FC = () => {
 
     checkUserStatus();
     window.addEventListener('storage', checkUserStatus);
-    window.addEventListener('focus', checkUserStatus);
 
-    const interval = setInterval(checkUserStatus, 500);
+    const interval = setInterval(checkUserStatus, 1000);
 
     return () => {
       window.removeEventListener('storage', checkUserStatus);
-      window.removeEventListener('focus', checkUserStatus);
       clearInterval(interval);
     };
   }, []);
