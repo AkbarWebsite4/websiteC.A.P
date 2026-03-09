@@ -1120,7 +1120,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                   <div className="bg-white p-4 rounded-xl shadow-lg">
                     <h4 className="text-lg font-bold text-gray-900 mb-3 text-center">DC</h4>
                     <img
-                      src="/QR Dc .jpg"
+                      src="/qr_alif_2.jpg"
                       alt="QR код для оплаты DC"
                       className="w-full h-auto"
                       style={{ maxHeight: '300px', objectFit: 'contain' }}

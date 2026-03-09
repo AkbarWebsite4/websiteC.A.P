@@ -40,7 +40,7 @@ export const HeroRu: React.FC = () => {
         {/* Centered Logo */}
         <div className="mb-6 mt-24 content-reveal delay-1">
           <img
-            src="/cap logotip.jpg"
+            src="/logo_cap_with_ramka.png"
             alt="C.A.P. Logo"
             className="h-32 w-32 sm:h-36 sm:w-36 lg:h-40 lg:w-40 rounded-full object-cover border-4 border-blue-600 shadow-2xl mx-auto brightness-110 contrast-125 saturate-110 filter drop-shadow-2xl"
             style={{
@@ -54,16 +54,9 @@ export const HeroRu: React.FC = () => {
         {/* Main Heading - C.A.P text */}
         <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-black mb-8 leading-tight tracking-tight hero-title-animated">
           <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-6 tracking-tight content-reveal delay-2">
-            <img
-              src="/Parts 1.png"
-              alt="Ваш проводник в сфере автозапчастей"
-              className="h-8 sm:h-10 lg:h-12 xl:h-14 mx-auto object-contain filter brightness-110 contrast-125 saturate-110"
-              style={{
-                imageRendering: 'crisp-edges',
-                WebkitImageRendering: 'crisp-edges',
-                msImageRendering: 'crisp-edges'
-              }}
-            />
+            <span className="block text-blue-500 text-3xl sm:text-4xl lg:text-5xl font-black mb-4 tracking-widest">
+              C.A.P
+            </span>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-black mt-4 tracking-wide content-reveal delay-3">
               Ваш проводник в сфере автозапчастей
             </h2>

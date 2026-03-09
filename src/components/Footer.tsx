@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center justify-center space-x-3 mb-6">
               <img
-                src="/C.A.P logo.jpg"
+                src="/logo_cap_with_ramka.png"
                 alt="Common Auto Parts"
                 className="h-12 w-12 rounded-full object-cover"
               />
