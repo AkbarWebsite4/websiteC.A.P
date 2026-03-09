@@ -94,7 +94,7 @@ export const Contact: React.FC = () => {
         <div className="border-t border-gray-800 mt-16 pt-8 text-center">
           <div className="flex items-center justify-center space-x-4 mb-4">
             <img
-              src="/cap logotip.jpg"
+              src="/katalog_c.a.p.jpg"
               alt="C.A.P. Logo"
               className="h-10 w-10 rounded-full object-cover border border-blue-600"
             />
