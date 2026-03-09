@@ -53,12 +53,12 @@ export const BrandsRu: React.FC = () => {
 
   // Ходовые части - 6 карточек
   const hodovyeBrands = [
-    { name: "", category: "Ходовые части", logo: "/1 copy.png" },
-    { name: "", category: "Ходовые части", logo: "/2 copy.png" },
-    { name: "", category: "Ходовые части", logo: "/3 copy.png" },
-    { name: "Амортизаторы", category: "Ходовые части", logo: "/4 copy.png" },
-    { name: "Амортизаторы", category: "Ходовые части", logo: "/5 copy.png" },
-    { name: "Амортизаторы", category: "Ходовые части", logo: "/6 copy.png" },
+    { name: "", category: "Ходовые части", logo: "/1_copy.png" },
+    { name: "", category: "Ходовые части", logo: "/2_copy.png" },
+    { name: "", category: "Ходовые части", logo: "/3_copy.png" },
+    { name: "Амортизаторы", category: "Ходовые части", logo: "/4_copy.png" },
+    { name: "Амортизаторы", category: "Ходовые части", logo: "/5_copy.png" },
+    { name: "Амортизаторы", category: "Ходовые части", logo: "/6_copy.png" },
   ];
 
   // Тормозные части и трансмиссии - 5 карточек
@@ -253,8 +253,8 @@ export const BrandsRu: React.FC = () => {
               { name: "Моторное масло", category: "Премиальное масло", logo: "/eneos.png" },
               { name: "Моторное масло", category: "Премиальное масло", logo: "/total 2.png" },
               { name: "Поршни и гильзы", category: "Моторные части", logo: "/toto.jpg" },
-              { name: "Моторные масла", category: "Оригинальное масло", logo: "/Toyota oil 2png.png" },
-              { name: "Моторное масло", category: "Синтетическое масло", logo: "/Valvoline 2.png" },
+              { name: "Моторные масла", category: "Оригинальное масло", logo: "/Toyota_oil_2png.png" },
+              { name: "Моторное масло", category: "Синтетическое масло", logo: "/Valvoline_2.png" },
               { name: "Фильтры", category: "Фильтрация", logo: "/vic.jpg" },
             ].map((brand, index) => (
               <div 

@@ -55,7 +55,7 @@ export const HeroRu: React.FC = () => {
         <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-black mb-8 leading-tight tracking-tight hero-title-animated">
           <div className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-6 tracking-tight content-reveal delay-2">
             <img
-              src="/Parts 1.png"
+              src="/Parts_1.png"
               alt="Ваш проводник в сфере автозапчастей"
               className="h-8 sm:h-10 lg:h-12 xl:h-14 mx-auto object-contain filter brightness-110 contrast-125 saturate-110"
               style={{
