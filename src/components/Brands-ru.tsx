@@ -11,8 +11,8 @@ export const BrandsRu: React.FC = () => {
     // First 10 brands with logos (1.png to 10.png)
     { name: "NDC", category: "Моторные части", logo: "/ndc.png" },
     { name: "TP", category: "Моторные части", logo: "/TP.png" },
-    { name: "Водяной помпа", category: "Моторные части", logo: "/karta_3.png" },
-    { name: "Фильтры", category: "Моторные части", logo: "/karta_4.png" },
+    { name: "Водяной помпа", category: "Моторные части", logo: "/karta 3.png" },
+    { name: "Фильтры", category: "Моторные части", logo: "/karta 4.png" },
     { name: "Подшипники", category: "Моторные части", logo: "/5.png" },
     { name: "ERISTIC Gasket", category: "Моторные части", logo: "/eristic.png" },
     { name: "Вкладыши", category: "Моторные части", logo: "/7.png" },
@@ -30,7 +30,7 @@ export const BrandsRu: React.FC = () => {
     // Cards 16-20 with logos (16.png to 20.png)
     { name: "Фильтры", category: "Моторные части", logo: "/16.png" },
     { name: "Подшипники", category: "Моторные части", logo: "/17.png" },
-    { name: "TONG HONG GASKETS", category: "Моторные части", logo: "/tong_hong.png" },
+    { name: "TONG HONG GASKETS", category: "Моторные части", logo: "/tong hong.png" },
     { name: "Переключатель давление масла", category: "Моторные части", logo: "/20.png" },
     
     // Cards 21-25 with logos (21.png to 25.png)
@@ -53,29 +53,29 @@ export const BrandsRu: React.FC = () => {
 
   // Ходовые части - 6 карточек
   const hodovyeBrands = [
-    { name: "", category: "Ходовые части", logo: "/1_copy.png" },
-    { name: "", category: "Ходовые части", logo: "/2_copy.png" },
-    { name: "", category: "Ходовые части", logo: "/3_copy.png" },
-    { name: "Амортизаторы", category: "Ходовые части", logo: "/4_copy.png" },
-    { name: "Амортизаторы", category: "Ходовые части", logo: "/5_copy.png" },
-    { name: "Амортизаторы", category: "Ходовые части", logo: "/6_copy.png" },
+    { name: "", category: "Ходовые части", logo: "/1 copy.png" },
+    { name: "", category: "Ходовые части", logo: "/2 copy.png" },
+    { name: "", category: "Ходовые части", logo: "/3 copy.png" },
+    { name: "Амортизаторы", category: "Ходовые части", logo: "/4 copy.png" },
+    { name: "Амортизаторы", category: "Ходовые части", logo: "/5 copy.png" },
+    { name: "Амортизаторы", category: "Ходовые части", logo: "/6 copy.png" },
   ];
 
   // Тормозные части и трансмиссии - 5 карточек
   const tormoznyeBrands = [
-    { name: "", category: "Тормозные колодки", logo: "/tormoz_1.png" },
-    { name: "", category: "Тормозные диски", logo: "/tormoz_2.png" },
-    { name: "Гидравлические части тормоза", category: "Тормозная жидкость", logo: "/tormoz_3.png" },
-    { name: "", category: "Трансмиссионное масло", logo: "/tormoz_4.png" },
-    { name: "", category: "Сцепление", logo: "/tormoz_5.png" },
+    { name: "", category: "Тормозные колодки", logo: "/tormoz 1.png" },
+    { name: "", category: "Тормозные диски", logo: "/tormoz 2.png" },
+    { name: "Гидравлические части тормоза", category: "Тормозная жидкость", logo: "/tormoz 3.png" },
+    { name: "", category: "Трансмиссионное масло", logo: "/tormoz 4.png" },
+    { name: "", category: "Сцепление", logo: "/tormoz 5.png" },
   ];
 
   // Кузовные части / Рестайлинг - 4 карточки
   const kuzovnyeBrands = [
-    { name: "Кузовные компоненты", category: "Бамперы", logo: "/kuzovnie_1.png" },
-    { name: "Фары", category: "Фары", logo: "/kuzovnie_2.png" },
-    { name: "Фары", category: "Зеркала", logo: "/kuzovnie_3.png" },
-    { name: "Кузовные части", category: "Молдинги", logo: "/kuzovnie_4.png" },
+    { name: "Кузовные компоненты", category: "Бамперы", logo: "/kuzovnie 1.png" },
+    { name: "Фары", category: "Фары", logo: "/kuzovnie 2.png" },
+    { name: "Фары", category: "Зеркала", logo: "/kuzovnie 3.png" },
+    { name: "Кузовные части", category: "Молдинги", logo: "/kuzovnie 4.png" },
   ];
 
   return (
@@ -246,15 +246,15 @@ export const BrandsRu: React.FC = () => {
 
             {/* Моторное масло */}
             {[
-              { name: "Моторное масло", category: "Синтетическое масло", logo: "/royal_super_2.png" },
-              { name: "Моторные масла", category: "Полусинтетическое масло", logo: "/lukoil_2.png" },
-              { name: "Моторное масло", category: "Минеральное масло", logo: "/drivol_2.png" },
-              { name: "Топливный насос", category: "Топливная система", logo: "/fd_elecman.png" },
+              { name: "Моторное масло", category: "Синтетическое масло", logo: "/royal super 2.png" },
+              { name: "Моторные масла", category: "Полусинтетическое масло", logo: "/lukoil 2.png" },
+              { name: "Моторное масло", category: "Минеральное масло", logo: "/drivol 2.png" },
+              { name: "Топливный насос", category: "Топливная система", logo: "/fd elecman.png" },
               { name: "Моторное масло", category: "Премиальное масло", logo: "/eneos.png" },
-              { name: "Моторное масло", category: "Премиальное масло", logo: "/total_2.png" },
+              { name: "Моторное масло", category: "Премиальное масло", logo: "/total 2.png" },
               { name: "Поршни и гильзы", category: "Моторные части", logo: "/toto.jpg" },
-              { name: "Моторные масла", category: "Оригинальное масло", logo: "/Toyota_oil_2png.png" },
-              { name: "Моторное масло", category: "Синтетическое масло", logo: "/Valvoline_2.png" },
+              { name: "Моторные масла", category: "Оригинальное масло", logo: "/Toyota oil 2png.png" },
+              { name: "Моторное масло", category: "Синтетическое масло", logo: "/Valvoline 2.png" },
               { name: "Фильтры", category: "Фильтрация", logo: "/vic.jpg" },
             ].map((brand, index) => (
               <div 
