@@ -40,7 +40,7 @@ export const HeroRu: React.FC = () => {
         {/* Centered Logo */}
         <div className="mb-6 mt-24 content-reveal delay-1">
           <img
-            src="/katalog_c.a.p.jpg"
+            src="/cap_logotip.jpg"
             alt="C.A.P. Logo"
             className="h-32 w-32 sm:h-36 sm:w-36 lg:h-40 lg:w-40 rounded-full object-cover border-4 border-blue-600 shadow-2xl mx-auto brightness-110 contrast-125 saturate-110 filter drop-shadow-2xl"
             style={{
