@@ -14,35 +14,26 @@ function CatalogApp() {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    console.log('=== CATALOG PAGE LOADING ===');
-    const catalogUser = localStorage.getItem('catalogUser') || sessionStorage.getItem('catalogUser');
-    console.log('Checking catalogUser:', catalogUser ? 'Found' : 'Not found');
-
+    const catalogUser = localStorage.getItem('catalogUser');
+    console.log('Checking catalogUser:', catalogUser);
     if (catalogUser) {
       try {
         const userData = JSON.parse(catalogUser);
         console.log('Parsed user data:', userData);
         console.log('User status:', userData.status);
-        console.log('User name:', userData.name);
-
         if (userData.status === 'approved') {
-          console.log('✓ User approved, setting user state');
           setUser(userData);
         } else {
-          console.log('✗ User status not approved, redirecting to auth');
+          console.log('User status not approved, redirecting to auth');
           localStorage.removeItem('catalogUser');
-          sessionStorage.removeItem('catalogUser');
-          alert('Ваш аккаунт еще не одобрен администратором');
           window.location.href = '/auth.html';
         }
       } catch (error) {
         console.error('Error parsing user data:', error);
-        localStorage.removeItem('catalogUser');
-        sessionStorage.removeItem('catalogUser');
         window.location.href = '/auth.html';
       }
     } else {
-      console.log('✗ No catalogUser in storage, redirecting to auth');
+      console.log('No catalogUser in localStorage, redirecting to auth');
       window.location.href = '/auth.html';
     }
   }, []);
