@@ -1,41 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CatalogPage } from './components/CatalogPage';
+import { supabase } from './lib/supabase';
 import './index.css';
 
 interface AuthUser {
+  id: string;
   email: string;
-  password: string;
   name: string;
-  status?: string;
+  status: string;
+  is_admin?: boolean;
+  company_name?: string;
+  address?: string;
+  phone_number?: string;
 }
 
 function CatalogApp() {
   const [user, setUser] = useState<AuthUser | null>(null);
+  const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const catalogUser = localStorage.getItem('catalogUser');
-    console.log('Checking catalogUser:', catalogUser);
-    if (catalogUser) {
+    const verifySession = async () => {
+      const catalogUser = localStorage.getItem('catalogUser');
+      if (!catalogUser) {
+        window.location.href = '/auth.html';
+        return;
+      }
+
       try {
-        const userData = JSON.parse(catalogUser);
-        console.log('Parsed user data:', userData);
-        console.log('User status:', userData.status);
-        if (userData.status === 'approved') {
-          setUser(userData);
-        } else {
-          console.log('User status not approved, redirecting to auth');
+        const userData = JSON.parse(catalogUser) as AuthUser;
+
+        const { data, error } = await supabase
+          .from('catalog_users')
+          .select('id, email, name, status, is_admin, company_name, address, phone_number')
+          .eq('email', userData.email)
+          .maybeSingle();
+
+        if (error || !data) {
           localStorage.removeItem('catalogUser');
           window.location.href = '/auth.html';
+          return;
         }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+
+        if (data.status !== 'approved') {
+          localStorage.removeItem('catalogUser');
+          window.location.href = '/auth.html';
+          return;
+        }
+
+        localStorage.setItem('catalogUser', JSON.stringify(data));
+        setUser(data);
+      } catch {
+        localStorage.removeItem('catalogUser');
         window.location.href = '/auth.html';
+      } finally {
+        setIsChecking(false);
       }
-    } else {
-      console.log('No catalogUser in localStorage, redirecting to auth');
-      window.location.href = '/auth.html';
-    }
+    };
+
+    verifySession();
   }, []);
 
   const handleLogout = () => {
@@ -47,9 +70,9 @@ function CatalogApp() {
     window.location.href = '/';
   };
 
-  if (!user) {
+  if (isChecking || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-white text-xl">Загрузка...</div>
       </div>
     );

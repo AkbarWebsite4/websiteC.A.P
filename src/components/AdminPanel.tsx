@@ -305,79 +305,84 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onCatalogUpdate, current
   };
 
   const saveCatalog = async () => {
-    if (previewData.length > 0) {
-      setIsProcessing(true);
-      let successfulInserts = 0;
-      let failedBatches = 0;
+    const dataToSave = previewData.length > 0 ? previewData : allCatalogData;
+    if (dataToSave.length === 0) return;
 
-      try {
-        const { error: deleteError } = await supabase
-          .from('catalog_parts')
-          .delete()
-          .neq('id', '00000000-0000-0000-0000-000000000000');
+    setIsProcessing(true);
+    let successfulInserts = 0;
+    let failedBatches = 0;
 
-        if (deleteError) throw deleteError;
+    try {
+      showUploadStatus(`Очистка старых данных...`, 'warning');
 
-        const catalogToInsert = previewData.map(item => ({
-          code: item.code,
-          name: item.name,
-          brand: item.brand,
-          price: item.price,
-          weight: item.weight,
-          category: item.category,
-          description: item.description,
-          availability: item.availability,
-          qty: item.qty || (item.availability === 'В наличии' ? '999' : '0')
-        }));
+      const { error: deleteError } = await supabase
+        .from('catalog_parts')
+        .delete()
+        .neq('code', '___IMPOSSIBLE___');
 
-        const batchSize = 5000;
-        const totalBatches = Math.ceil(catalogToInsert.length / batchSize);
+      if (deleteError) throw deleteError;
 
-        for (let i = 0; i < catalogToInsert.length; i += batchSize) {
-          const batch = catalogToInsert.slice(i, i + batchSize);
-          const currentBatch = Math.floor(i / batchSize) + 1;
+      const catalogToInsert = dataToSave.map(item => ({
+        code: item.code,
+        name: item.name || item.code,
+        brand: item.brand || '',
+        price: item.price || 'Цена по запросу',
+        weight: item.weight || '',
+        category: item.category || 'Автозапчасти',
+        description: item.description || item.name || item.code,
+        availability: item.availability || 'В наличии',
+        qty: item.qty || (item.availability === 'В наличии' ? '999' : '0')
+      }));
 
-          try {
-            const { error: insertError } = await supabase
-              .from('catalog_parts')
-              .insert(batch);
+      const batchSize = 500;
+      const totalBatches = Math.ceil(catalogToInsert.length / batchSize);
 
-            if (insertError) {
-              console.error(`Ошибка в батче ${currentBatch}:`, insertError);
-              failedBatches++;
-            } else {
-              successfulInserts += batch.length;
-              console.log(`Батч ${currentBatch}/${totalBatches}: Загружено ${Math.min(i + batchSize, catalogToInsert.length)} из ${catalogToInsert.length} позиций`);
-            }
-          } catch (batchError) {
-            console.error(`Критическая ошибка в батче ${currentBatch}:`, batchError);
+      for (let i = 0; i < catalogToInsert.length; i += batchSize) {
+        const batch = catalogToInsert.slice(i, i + batchSize);
+        const currentBatch = Math.floor(i / batchSize) + 1;
+
+        showUploadStatus(`Сохранение батча ${currentBatch}/${totalBatches} (${Math.min(i + batchSize, catalogToInsert.length)} из ${catalogToInsert.length})...`, 'warning');
+
+        try {
+          const { error: insertError } = await supabase
+            .from('catalog_parts')
+            .insert(batch);
+
+          if (insertError) {
+            console.error(`Ошибка в батче ${currentBatch}:`, insertError);
             failedBatches++;
+          } else {
+            successfulInserts += batch.length;
           }
+        } catch (batchError) {
+          console.error(`Критическая ошибка в батче ${currentBatch}:`, batchError);
+          failedBatches++;
         }
 
-        onCatalogUpdate(previewData, selectedFiles.map(file => file.name));
-
-        const statusMessage = failedBatches > 0
-          ? `Загружено ${successfulInserts} из ${catalogToInsert.length} позиций. Ошибок: ${failedBatches} батч(ей).`
-          : `✓ Успешно загружено ${successfulInserts} позиций!`;
-
-        const statusType = failedBatches > 0 ? 'warning' : 'success';
-
-        showUploadStatus(statusMessage, statusType);
-
-        setSelectedFiles([]);
-        setPreviewData([]);
-        setAllCatalogData(previewData);
-
-        if (failedBatches === 0) {
-          setTimeout(() => onClose(), 3000);
-        }
-      } catch (error: any) {
-        console.error('Ошибка сохранения каталога:', error);
-        showUploadStatus(`Ошибка: ${error.message}`, 'error');
-      } finally {
-        setIsProcessing(false);
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
+
+      onCatalogUpdate(dataToSave, selectedFiles.map(file => file.name));
+
+      const statusMessage = failedBatches > 0
+        ? `Загружено ${successfulInserts} из ${catalogToInsert.length} позиций. Ошибок: ${failedBatches} батч(ей).`
+        : `Успешно загружено ${successfulInserts} позиций!`;
+
+      const statusType = failedBatches > 0 ? 'warning' : 'success';
+      showUploadStatus(statusMessage, statusType);
+
+      setSelectedFiles([]);
+      setPreviewData([]);
+      setAllCatalogData(dataToSave);
+
+      if (failedBatches === 0) {
+        setTimeout(() => onClose(), 3000);
+      }
+    } catch (error: any) {
+      console.error('Ошибка сохранения каталога:', error);
+      showUploadStatus(`Ошибка: ${error.message}`, 'error');
+    } finally {
+      setIsProcessing(false);
     }
   };
 

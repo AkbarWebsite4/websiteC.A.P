@@ -19,9 +19,11 @@ interface PartData {
 }
 
 interface AuthUser {
+  id: string;
   email: string;
-  password: string;
   name: string;
+  status: string;
+  is_admin?: boolean;
 }
 
 interface CatalogPageProps {
@@ -86,8 +88,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
   const ADMIN_EMAIL = 't8.fd88@gmail.com';
   const ADMIN_EMAILS = ['t8.fd88@gmail.com', 'admin@cap.com']; // Список админов
 
-  // Проверка является ли пользователь админом
-  const isAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase());
+  const isAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase()) || user.is_admin === true;
 
   const formatPrice = (price: string): string => {
     if (!price) return 'Цена по запросу';
@@ -502,39 +503,50 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
         console.log('Таблица успешно очищена');
       }
 
-      const batchSize = 1000;
+      const batchSize = 500;
       let successCount = 0;
+      let failedBatches = 0;
 
       for (let i = 0; i < catalogData.length; i += batchSize) {
         const batch = catalogData.slice(i, i + batchSize);
-        setUploadStatusMessage({ message: `Сохранение ${i + 1}-${Math.min(i + batchSize, catalogData.length)} из ${catalogData.length}...`, type: 'info' });
+        const currentBatch = Math.floor(i / batchSize) + 1;
+        const totalBatches = Math.ceil(catalogData.length / batchSize);
+        setUploadStatusMessage({ message: `Сохранение батча ${currentBatch}/${totalBatches} (${Math.min(i + batchSize, catalogData.length)} из ${catalogData.length})...`, type: 'info' });
 
         const dataToInsert = batch.map(item => ({
           code: item.code,
-          name: item.name,
+          name: item.name || item.code,
           brand: item.brand || '',
-          price: item.price,
+          price: item.price || 'Цена по запросу',
           weight: item.weight || '',
-          category: item.category,
-          description: item.description || item.name,
-          availability: item.availability,
+          category: item.category || 'Автозапчасти',
+          description: item.description || item.name || item.code,
+          availability: item.availability || 'В наличии',
           qty: item.qty || '0'
         }));
 
-        const { error, count } = await supabase
-          .from('catalog_parts')
-          .insert(dataToInsert)
-          .select('code', { count: 'exact', head: true });
+        try {
+          const { error } = await supabase
+            .from('catalog_parts')
+            .insert(dataToInsert);
 
-        if (error) {
-          console.error(`Ошибка сохранения батча ${i}-${i + batchSize}:`, error);
-          throw new Error(`Ошибка сохранения: ${error.message}`);
-        } else {
-          successCount += batch.length;
-          console.log(`Сохранено ${successCount} из ${catalogData.length} позиций`);
+          if (error) {
+            console.error(`Ошибка батча ${currentBatch}:`, error);
+            failedBatches++;
+          } else {
+            successCount += batch.length;
+            console.log(`Сохранено ${successCount} из ${catalogData.length} позиций`);
+          }
+        } catch (batchError) {
+          console.error(`Критическая ошибка батча ${currentBatch}:`, batchError);
+          failedBatches++;
         }
 
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      if (failedBatches > 0) {
+        throw new Error(`Ошибок при сохранении: ${failedBatches} батч(ей). Сохранено ${successCount} из ${catalogData.length}`);
       }
 
       console.log(`Сохранение завершено: ${successCount} из ${catalogData.length} позиций`);
