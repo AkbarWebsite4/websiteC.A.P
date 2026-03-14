@@ -164,7 +164,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
     const interval = setInterval(() => {
       updateExchangeRatesFromAPI();
       fetchExchangeRates();
-    }, 60000);
+    }, 60 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -1061,7 +1061,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                       src="/QR_Alif_22.png"
                       alt="QR код для оплаты Alif"
                       className="w-full h-auto"
-                      style={{ maxHeight: '300px', objectFit: 'contain' }}
+                      style={{ minHeight: '320px', maxHeight: '480px', objectFit: 'contain' }}
                     />
                   </div>
                 </div>
