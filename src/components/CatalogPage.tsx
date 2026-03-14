@@ -1061,7 +1061,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
                       src="/QR_Alif_22.png"
                       alt="QR код для оплаты Alif"
                       className="w-full h-auto"
-                      style={{ maxHeight: '300px', objectFit: 'contain' }}
+                      style={{ maxHeight: '600px', objectFit: 'contain' }}
                     />
                   </div>
                 </div>
