@@ -561,7 +561,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({ user, onLogout, onBack
     try {
       let allData: any[] = [];
       let from = 0;
-      const batchSize = 10000;
+      const batchSize = 1000;
       let hasMore = true;
 
       console.log('Начало загрузки каталога из базы данных...');
