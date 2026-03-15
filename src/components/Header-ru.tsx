@@ -21,11 +21,15 @@ export const HeaderRu: React.FC = () => {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const userStr = localStorage.getItem('capCurrentUser');
+      const userStr = localStorage.getItem('catalogUser');
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
-          setUserName(user.full_name || user.email);
+          if (user.status === 'approved') {
+            setUserName(user.name || user.email);
+          } else {
+            setUserName(null);
+          }
         } catch (e) {
           setUserName(null);
         }
@@ -64,7 +68,7 @@ export const HeaderRu: React.FC = () => {
         isScrolled ? 'bg-black/95 backdrop-blur-sm shadow-2xl' : 'bg-transparent'
       }`}>
         <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-20">
+          <div className="flex items-center justify-between h-20">
             {/* Mobile Menu Button - Left Corner */}
             <button
               className="lg:hidden p-2 rounded-md text-gray-300 hover:text-black hover:bg-gray-800 transition-colors duration-200"
@@ -73,8 +77,8 @@ export const HeaderRu: React.FC = () => {
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
 
-            {/* Desktop Navigation - Centered with absolute positioning */}
-            <div className="hidden lg:flex items-center justify-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
+            {/* Desktop Navigation - Centered */}
+            <div className="hidden lg:flex items-center justify-center space-x-8 flex-1">
               {navLinks.map((link) => (
                 <a
                   key={link.name}
@@ -87,40 +91,38 @@ export const HeaderRu: React.FC = () => {
               ))}
             </div>
 
-            {/* Login/Register Button - Desktop - Far Right */}
-            <div className="hidden lg:flex ml-auto">
-              <a
-                href="/auth.html"
-                className="flex items-center space-x-2 bg-[#144374] hover:bg-[#1e5ba8] text-black px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg"
-              >
-                {userName ? (
-                  <>
-                    <User className="w-5 h-5" />
-                    <span>{userName}</span>
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="w-5 h-5" />
-                    <span>Регистрация/Вход</span>
-                  </>
-                )}
-              </a>
-            </div>
-
-            {/* Login/Register Button - Mobile */}
+            {/* Login/Register Button - Desktop */}
             <a
-              href="/auth.html"
-              className="lg:hidden flex items-center space-x-2 bg-[#144374] hover:bg-[#1e5ba8] text-black px-4 py-2 rounded-lg font-semibold transition-colors text-sm ml-auto"
+              href={userName ? '/catalog.html' : '/auth.html'}
+              className="hidden lg:flex items-center space-x-2 bg-[#144374] hover:bg-[#1e5ba8] text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-lg whitespace-nowrap"
             >
               {userName ? (
                 <>
-                  <User className="w-4 h-4" />
+                  <User className="w-5 h-5 flex-shrink-0" />
                   <span>{userName}</span>
                 </>
               ) : (
                 <>
-                  <LogIn className="w-4 h-4" />
+                  <LogIn className="w-5 h-5 flex-shrink-0" />
                   <span>Регистрация/Вход</span>
+                </>
+              )}
+            </a>
+
+            {/* Login/Register Button - Mobile */}
+            <a
+              href={userName ? '/catalog.html' : '/auth.html'}
+              className="lg:hidden flex items-center space-x-2 bg-[#144374] hover:bg-[#1e5ba8] text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm ml-auto whitespace-nowrap"
+            >
+              {userName ? (
+                <>
+                  <User className="w-4 h-4 flex-shrink-0" />
+                  <span className="max-w-[80px] truncate">{userName}</span>
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4 flex-shrink-0" />
+                  <span>Вход</span>
                 </>
               )}
             </a>
